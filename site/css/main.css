@@ -1,0 +1,32 @@
+.card {
+    display: inline-block;
+    border: 1px solid black;
+    width: 80px;
+    height: 80px;
+}
+
+.selected {
+    background-color: yellow;
+}
+
+.card-row {
+    display: flex;
+}
+
+.play-button {
+    height: 40px;
+    width: 120px;
+    text-align: center;
+
+    border: 1px solid #cedbd6;
+    background-color: #dce5e2;
+}
+
+.play-button.enabled {
+    border: 1px solid #42f4b9;
+    background-color: #adf7de;
+}
+
+.active-player {
+    border: 5px solid red;
+}
