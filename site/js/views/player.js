@@ -184,7 +184,7 @@ return Backbone.View.extend({
 
 	$selectedHand.html(selectedHandHTML);
 
-      var playButtonEnabled = ( isValidHand && view.isActivePlayer );
+	var playButtonEnabled = ( isValidHand && view.isActivePlayer );
 	view.$el.find('.play-button').toggleClass('enabled', playButtonEnabled);
     },
 
