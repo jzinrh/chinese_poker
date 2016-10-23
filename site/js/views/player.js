@@ -1,109 +1,37 @@
 define("views/player", [
-	'models/player',
-	'collections/card',
-	'models/card',
 	'views/card',
 	'app',
-	'socketio',
 	'template!templates/card.hbs',
-	'template!templates/card_row.hbs',
-	'template!templates/new_player.hbs',
-	"template!templates/played_card.hbs"
+	'template!templates/card_row.hbs'
 ], function(
-	Player,
-	CardCollection,
-	Card,
 	CardView,
 	CardApp,
-	io,
 	CardTemplate,
-	CardRowTemplate,
-	NewPlayerTemplate,
-	PlayedCardTemplate
+	CardRowTemplate
 ) {
 
 return Backbone.View.extend({
 	events: {
-		'click .join-button': 'join',
 		'click .card-row:not(.disabled) .card': 'toggleCardSelected',
 		'click .enabled.play-button': 'playSelectedCards'
 	},
 
-	initialize: function() {
+	initialize: function(args) {
 		var view = this;
 
 		view.app = {};
 		view.app[ 'card' ] = new CardApp();
+
+		view.isActivePlayer = true;
+
+		view.gameCode = args.gameCode;
+		view.player = args.player;
+		view.cards = args.cards;
+		view.socket = args.socket;
 	},
 
 	/********************************************************************************
 	 * render
-	 *
-	 * Description:
-	 *  Render the 'registration' view, and attach general listeners.
-	 *
-	 * Return:
-	 *  Not meaningful.
-	 ********************************************************************************/
-	render: function() {
-		var view = this;
-
-		view.$el.find('.new-player').html(
-			NewPlayerTemplate()
-		);
-
-		view.$playerName = view.$el.find('.player-name');
-		view.$gameCode = view.$el.find('.game-code');
-
-		view.attachListeners();
-	},
-
-	/********************************************************************************
-	 * attachListeners
-	 *
-	 * Description:
-	 *  Connect to the server via socketio.
-	 *
-	 * Return:
-	 *  Not meaningful.
-	 ********************************************************************************/
-	attachListeners: function() {
-		var view = this;
-
-		if (view.attachedListeners) {
-			return;
-		}
-
-		view.attachedListeners = true;
-
-		var url = 'http://localhost:8080';
-		view.socket = io.connect(url);
-
-		// When the game begins, switch to the in-game player view.
-		view.socket.on('begin', function(args) {
-			var player = args.player;
-
-			view.isActivePlayer = (
-				args.activePlayer === player.name
-			);
-
-			var cards = _.map(player.hand, function(card) {
-				return new Card(card);
-			});
-			var playerHand = new CardCollection(cards);
-			view.player = new Player({
-				name: player.name,
-				hand: playerHand
-			});
-			view.cards = view.player.get('hand');
-
-			view._showPlayerView();
-		});
-
-	},
-
-	/********************************************************************************
-	 * _showPlayerView
 	 *
 	 * Description:
 	 *  Render the in-game player view, and attach in-game listeners.
@@ -111,15 +39,14 @@ return Backbone.View.extend({
 	 * Return:
 	 *  Not meaningful.
 	 ********************************************************************************/
-	_showPlayerView: function() {
+	render: function() {
 		var view = this;
 
-		view.$el.find('.new-player').hide();
-
 		view.$el.append(CardRowTemplate());
+
 		view._renderHand();
 
-		view.attachCardListeners();
+		view.attachListeners();
 	},
 
 	/********************************************************************************
@@ -260,7 +187,7 @@ return Backbone.View.extend({
 		view.cards.remove(view.selectedCards);
 
 		view.socket.emit('play cards', {
-			game: view.$gameCode.val(),
+			game: view.gameCode,
 			name: view.player.get('name'),
 			cards: view.selectedCards
 		});
@@ -268,7 +195,7 @@ return Backbone.View.extend({
 		view._renderHand();
 	},
 
-	attachCardListeners: function() {
+	attachListeners: function() {
 		var view = this;
 
 		if (view.attachedCardListeners) {
@@ -285,46 +212,7 @@ return Backbone.View.extend({
 			view.updateSelected();
 		});
 
-		view.socket.on('cards played', function(args) {
-			var cards = _.map(args.cards, function(cardContext) {
-				return new Card(cardContext);
-			});
-
-			var handDisplayString = view.app[ 'card' ].handDisplayString(cards);
-			view.$el.find('.game-log').append(
-				PlayedCardTemplate({
-					player: args.name,
-					contents: handDisplayString
-				})
-			);
-
-			view.isActivePlayer = (
-				args.activePlayer === view.player.get('name')
-			);
-		});
-
 		return false;
-	},
-
-
-	/********************************************************************************
-	 * join
-	 *
-	 * Description:
-	 *  Join a game.
-	 *
-	 * Return:
-	 *  Not meaningful.
-	 ********************************************************************************/
-	join: function() {
-		var view = this;
-
-		var gameArgs = {
-			name: view.$playerName.val(),
-			game: view.$gameCode.val()
-		};
-
-		view.socket.emit('join', gameArgs);
 	}
 
 });

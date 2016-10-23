@@ -20,19 +20,19 @@ requirejs.config({
 
 requirejs([
 	'jquery',
-	'views/player'
+	'views/game'
 ], function(
 	$,
-	PlayerView
+	GameView
 ) {
 	$(function() {
-		var $newPlayer = $('#game');
+		var $game = $('#game');
 
-		var player = new PlayerView({
-			el: $newPlayer
+		var gameView = new GameView({
+			el: $game
 		});
 
-		player.render();
+		gameView.render();
 	});
 });
 

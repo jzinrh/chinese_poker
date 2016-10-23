@@ -79,17 +79,20 @@ function joinGameHandler(socket, args) {
 
 		var playerNames = [];
 		// Uncomment for basic testing
-		// playerNames = _.map(['',' 2',' 3',' 4'], function(i) { return args.name + i; });
+		playerNames = _.map(['',' 2',' 3',' 4'], function(i) { return args.name + i; });
 
 		if (gameSockets.length == 4) {
 			playerNames = _.map(gameSockets, function(gameSocket) {
 				return gameSocket['name'];
 			});
+		}
 
+		if (playerNames.length == 4) {
 			console.log('player names: ' + playerNames);
 
 			_startGame({
 				game: game,
+				gameCode: args.game,
 				gameSockets: gameSockets,
 				playerNames: playerNames
 			});
@@ -101,6 +104,7 @@ function _startGame(args) {
 	var game = args.game;
 	var gameSockets = args.gameSockets;
 	var playerNames = args.playerNames;
+	var gameCode = args.gameCode;
 
 	game.newGame({
 		playerNames: playerNames
@@ -123,6 +127,7 @@ function _startGame(args) {
 
 		gameSocket.socket.emit('begin', {
 			player: player,
+			gameCode: gameCode,
 			activePlayer: activePlayer.get('name')
 		});
 	});
