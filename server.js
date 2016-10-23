@@ -40,13 +40,13 @@ io.on('connection', function(socket){
     socket.on('join', function(args) {
 	joinGameHandler(socket, args);
     });
-    
+
 });
 
 function playCardsHandler(socket, args) {
     console.log(args.name + ' played');
     var app = games[ args.game ];
-    
+
     var gameSockets = allGameSockets[ args.game ];
     var nextPlayer = app.nextActivePlayer();
 
@@ -71,12 +71,13 @@ function joinGameHandler(socket, args) {
     var exists = _.find(gameSockets, function(gameSocket) {
 	return gameSocket.name === args.name;
     });
-    
+
     if (!exists) {
 	gameSockets.push({
 	    socket: socket,
 	    name: args.name
 	});
+
 	var playerNames = _.map(['',' 2',' 3',' 4'], function(i) { return args.name + i; });
 
 	console.log('player names: ' + playerNames);

@@ -1,3 +1,7 @@
+/*
+ * requirejs handles dependencies, most third-party libraries need to
+ * be defined here to be used in our views.
+*/
 requirejs.config({
     shim: {
 	'socketio': {
@@ -15,32 +19,20 @@ requirejs.config({
 });
 
 requirejs([
-    'jquery'
+    'jquery',
+    'views/player'
 ], function(
-    $
+    $,
+    PlayerView
 ) {
-	
-	$(function() {
-	
-	    requirejs(["views/player"], function(playerView) {
-	    	var $newPlayer = $('#game');
-	
-	    	var player = new playerView({
-	    	    el: $newPlayer
-	    	});
-	
-	    	player.render();
-	    });
-	
-	    // requirejs(["views/game"], function(GameView) {
-	    // 	var $game = $('#game');
-	
-	    // 	var game = new GameView({
-	    // 	    el: $game
-	    // 	});
-	
-	    // 	game.render();
-	    // });
+    $(function() {
+	var $newPlayer = $('#game');
+
+	var player = new PlayerView({
+	    el: $newPlayer
 	});
+
+	player.render();
+    });
 });
 

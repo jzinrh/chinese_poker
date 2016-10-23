@@ -36,6 +36,15 @@ return Backbone.View.extend({
 	view.app[ 'card' ] = new CardApp();
     },
 
+    /********************************************************************************
+     * render
+     *
+     * Description:
+     *  Render the 'registration' view, and attach general listeners.
+     *
+     * Return:
+     *  Not meaningful.
+     ********************************************************************************/
     render: function() {
 	var view = this;
 
@@ -49,6 +58,59 @@ return Backbone.View.extend({
 	view.attachListeners();
     },
 
+    /********************************************************************************
+     * attachListeners
+     *
+     * Description:
+     *  Connect to the server via socketio.
+     *
+     * Return:
+     *  Not meaningful.
+     ********************************************************************************/
+    attachListeners: function() {
+	var view = this;
+
+	if (view.attachedListeners) {
+	    return;
+	}
+
+	view.attachedListeners = true;
+
+	var url = 'http://localhost:8080';
+	view.socket = io.connect(url);
+
+      // When the game begins, switch to the in-game player view.
+	view.socket.on('begin', function(args) {
+	    var player = args.player;
+
+	    view.isActivePlayer = (
+		args.activePlayer === player.name
+	    );
+
+	    var cards = _.map(player.hand, function(card) {
+		return new Card(card);
+	    });
+	    var playerHand = new CardCollection(cards);
+	    view.player = new Player({
+		name: player.name,
+		hand: playerHand
+	    });
+	    view.cards = view.player.get('hand');
+
+	    view._showPlayerView();
+	});
+
+    },
+
+    /********************************************************************************
+     * _showPlayerView
+     *
+     * Description:
+     *  Render the in-game player view, and attach in-game listeners.
+     *
+     * Return:
+     *  Not meaningful.
+     ********************************************************************************/
     _showPlayerView: function() {
 	var view = this;
 
@@ -60,6 +122,16 @@ return Backbone.View.extend({
 	view.attachCardListeners();
     },
 
+    /********************************************************************************
+     * _renderHand
+     *
+     * Description:
+     *  Helper for _showPlayerView - empties the player's hand, and
+     *  then renders each card.
+     *
+     * Return:
+     *  Not meaningful.
+     ********************************************************************************/
     _renderHand: function() {
 	var view = this;
 
@@ -87,6 +159,16 @@ return Backbone.View.extend({
 	
     },
 
+    /********************************************************************************
+     * updateSelectedHand
+     *
+     * Description:
+     *  Take the plain-text string for the currently selected hand and
+     *  display it to the player.
+     *
+     * Return:
+     *  Not meaningful.
+     ********************************************************************************/
     updateSelectedHand: function() {
 	var view = this;
 
@@ -102,9 +184,19 @@ return Backbone.View.extend({
 
 	$selectedHand.html(selectedHandHTML);
 
-	view.$el.find('.play-button').toggleClass('enabled', isValidHand && view.isActivePlayer);
+      var playButtonEnabled = ( isValidHand && view.isActivePlayer );
+	view.$el.find('.play-button').toggleClass('enabled', playButtonEnabled);
     },
 
+    /********************************************************************************
+     * updateSelected
+     *
+     * Description:
+     *  Update the view's current selected cards.
+     *
+     * Return:
+     *  Not meaningful.
+     ********************************************************************************/
     updateSelected: function() {
 	var view = this;
 
@@ -117,6 +209,15 @@ return Backbone.View.extend({
 	view.updateSelectedHand();
     },
 
+    /********************************************************************************
+     * toggleCardSelected
+     *
+     * Description:
+     *  Toggle the selected state of a card.
+     *
+     * Return:
+     *  False, to prevent event propagation.
+     ********************************************************************************/
     toggleCardSelected: function(event) {
 	var view = this;
 
@@ -143,6 +244,16 @@ return Backbone.View.extend({
 	return false;
     },
 
+    /********************************************************************************
+     * playSelectedCards
+     *
+     * Description:
+     *  Remove the selected cards from the player's hand and
+     *  communicate the play to the server.
+     *
+     * Return:
+     *  Not meaningful.
+     ********************************************************************************/
     playSelectedCards: function() {
 	var view = this;
 
@@ -155,50 +266,6 @@ return Backbone.View.extend({
 	});
 	
 	view._renderHand();
-    },
-
-    turnChangeHandler: function() {
-	var view = this;
-
-	view.isActivePlayer = (
-	    view.player.cid === Game.get('activePlayer').cid
-	);
-
-	view.$el.toggleClass('active-player', view.isActivePlayer);
-	view.$el.find('.card-row').toggleClass('disabled', !view.isActivePlayer);
-    },
-
-    attachListeners: function() {
-	var view = this;
-
-	if (view.attachedListeners) {
-	    return;
-	}
-
-	view.attachedListeners = true;
-
-	var url = 'http://localhost:8080';
-	view.socket = io.connect(url);
-	view.socket.on('begin', function(args) {
-	    var player = args.player;
-
-	    view.isActivePlayer = (
-		args.activePlayer === player.name
-	    );
-
-	    var cards = _.map(player.hand, function(card) {
-		return new Card(card);
-	    });
-	    var playerHand = new CardCollection(cards);
-	    view.player = new Player({
-		name: player.name,
-		hand: playerHand
-	    });
-	    view.cards = view.player.get('hand');
-
-	    view._showPlayerView();
-	});
-
     },
 
     attachCardListeners: function() {
@@ -239,6 +306,16 @@ return Backbone.View.extend({
 	return false;
     },
 
+
+    /********************************************************************************
+     * join
+     *
+     * Description:
+     *  Join a game.
+     *  
+     * Return:
+     *  Not meaningful.
+     ********************************************************************************/
     join: function() {
 	var view = this;
 

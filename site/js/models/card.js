@@ -26,7 +26,7 @@ return Backbone.Model.extend({
 
     to_string: function() {
 	var model = this;
-	    
+
 	var value = model.get('value');
 	if (model.valueLookup[ value ]) {
 	    value = model.valueLookup[ value ];
