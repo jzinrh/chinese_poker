@@ -1,38 +1,38 @@
 define("models/deck", [
-    'models/card',
-    'collections/card',
-    'underscore',
+	'models/card',
+	'collections/card',
+	'underscore'
 ], function(
-    Card,
-    CardCollection,
-    _
+	Card,
+	CardCollection,
+	_
 ) {
 
 return CardCollection.extend({
 
-    initialize: function() {
-	var deck = this;
+	initialize: function() {
+		var deck = this;
 
-	var suits = [ 'Diamonds', 'Clubs', 'Hearts', 'Spades' ];
-	var values = _.range(1,14);
+		var suits = [ 'Diamonds', 'Clubs', 'Hearts', 'Spades' ];
+		var values = _.range(1,14);
 
-	var allCards = _.flatten(
-	    _.map(suits, function(cardSuit) {
-		return _.map(values, function(cardValue) {
-		    return new Card({
-			suit: cardSuit,
-			value: cardValue
-		    });
-		});
-	    })
-	);
+		var allCards = _.flatten(
+			_.map(suits, function(cardSuit) {
+				return _.map(values, function(cardValue) {
+					return new Card({
+						suit: cardSuit,
+						value: cardValue
+					});
+				});
+			})
+		);
 
-	allCards = _.shuffle(allCards);
-	
-	deck.add(allCards);
+		allCards = _.shuffle(allCards);
 
-	return;
-    }
+		deck.add(allCards);
+
+		return;
+	}
 });
 
 });

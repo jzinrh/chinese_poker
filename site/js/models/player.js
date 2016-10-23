@@ -1,26 +1,9 @@
 define("models/player", [
-    'backbone',
-    'models/card',
-    'collections/card',
-    'underscore'
+	'backbone'
 ], function(
-    Backbone,
-    Card,
-    CardCollection,
-    _
+	Backbone
 ) {
 
-return Backbone.Model.extend({
-    to_string: function() {
-	var player = this;
-
-	var playerHand = player.get('hand');
-	console.log(playerHand.length);
-
-	var handString = playerHand.to_string("\t")
-
-	return player.get('name') + "\n" + handString + "\n";
-    }
-});
+return Backbone.Model.extend({});
 
 });

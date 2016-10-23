@@ -1,3 +1,4 @@
 * TODO clean up the whitespace
 * TODO build out a cleaner registration view
 * TODO transition between registration and game view
+* TODO separate card app and game app, game model should be server only

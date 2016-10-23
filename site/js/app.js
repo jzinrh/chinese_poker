@@ -1,94 +1,96 @@
 define("app", [
-    'backbone',
-    'underscore',
-    'models/game'
+	'backbone',
+	'underscore',
+	'models/game'
 ], function(
-    Backbone,
-    _,
-    Game
+	Backbone,
+	_,
+	Game
 ) {
 
-return Backbone.Model.extend({    
-    newGame: function(args) {
-	var app = this;
-	app.game = Game;
-	Game.set('playerNames', args.playerNames);
-	Game.deal();
-    },
+return Backbone.Model.extend({
 
-    getPlayer: function(args) {
-	var app = this;
+	newGame: function(args) {
+		var app = this;
+		app.game = Game;
+		Game.set('playerNames', args.playerNames);
+		Game.deal();
+	},
 
-	var playerName = args.name;
+	getPlayer: function(args) {
+		var app = this;
 
-	var player = _.find(Game.get('players'), function(player) {
-	    return playerName === player.get('name');
-	});
+		var playerName = args.name;
 
-	return player;
-    },
+		var player = _.find(Game.get('players'), function(player) {
+			return playerName === player.get('name');
+		});
 
-    nextActivePlayer: function(args) {
-	var app = this;
+		return player;
+	},
 
-	var activePlayer = app.activePlayer();
-	var players = Game.get('players');
-	var playerIndex = _.findIndex(players, function(player) {
-	    return activePlayer.cid === player.cid;
-	});
+	nextActivePlayer: function(args) {
+		var app = this;
 
-	var nextPlayerIndex = ( playerIndex + 1 ) % players.length;
-	var nextPlayer = players[ nextPlayerIndex ];
+		var activePlayer = app.activePlayer();
+		var players = Game.get('players');
+		var playerIndex = _.findIndex(players, function(player) {
+			return activePlayer.cid === player.cid;
+		});
 
-	return app.activePlayer({ activePlayer: nextPlayer });
-    },
-    
-    activePlayer: function(args) {
-	var app = this;
+		var nextPlayerIndex = ( playerIndex + 1 ) % players.length;
+		var nextPlayer = players[ nextPlayerIndex ];
 
-	if (args && args.activePlayer) {
-	    Game.set('activePlayer', args.activePlayer);
+		return app.activePlayer({ activePlayer: nextPlayer });
+	},
+
+	activePlayer: function(args) {
+		var app = this;
+
+		if (args && args.activePlayer) {
+			Game.set('activePlayer', args.activePlayer);
+		}
+
+		return Game.get('activePlayer');
+	},
+
+	isValidHand: function(cards) {
+		var app = this;
+
+		var isValid = false;
+		if (cards.length == 1) {
+			isValid = true;
+		}
+		else if (cards.length == 2 || cards.length == 3) {
+			var uniqueCards = _.uniq(cards, function(card) {
+				return card.get('value');
+			});
+			isValid = (uniqueCards.length == 1);
+		}
+
+		return isValid;
+	},
+
+	handDisplayString: function(cards) {
+		var app = this;
+
+		var selectedHand;
+		if (cards.length == 1) {
+			selectedHand = cards[0].displayValue() + ' of ' + cards[0].get('suit');
+		}
+		else if (cards.length == 2 || cards.length == 3) {
+			if (cards.length == 2) {
+				selectedHand = 'Pair of ';
+			}
+			else {
+				selectedHand = 'Triple ';
+			}
+			selectedHand += cards[0].displayValue() + 's';
+		}
+
+		return selectedHand;
 	}
 
-	return Game.get('activePlayer');
-    },
-    
-    isValidHand: function(cards) {
-	var app = this;
-
-	var isValid = false;
-	if (cards.length == 1) {
-	    isValid = true;
-	}
-	else if (cards.length == 2 || cards.length == 3) {
-	    var uniqueCards = _.uniq(cards, function(card) {
-		return card.get('value');
-	    });
-	    isValid = (uniqueCards.length == 1);
-	}
-
-	return isValid;
-    },
-
-    handDisplayString: function(cards) {
-	var app = this;
-
-	var selectedHand;
-	if (cards.length == 1) {
-	    selectedHand = cards[0].displayValue() + ' of ' + cards[0].get('suit');
-	}
-	else if (cards.length == 2 || cards.length == 3) {
-	    if (cards.length == 2) {
-		selectedHand = 'Pair of ';
-	    }
-	    else {
-		selectedHand = 'Triple ';
-	    }
-	    selectedHand += cards[0].displayValue() + 's';
-	}
-
-	return selectedHand;
-    }
 });
 
 });
