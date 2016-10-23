@@ -54,16 +54,29 @@ return Backbone.View.extend({
 
 	view.$el.find('.new-player').hide();
 
+	view.$el.append(CardRowTemplate());
+	view._renderHand();
+
+	view.attachCardListeners();
+    },
+
+    _renderHand: function() {
+	var view = this;
+
+	var $hand = view.$el.find('.hand');
+	$hand.html('');
+
 	view.cards.map(function(card) {
+
 	    var $card = CardTemplate({
 		value: card.get('value'),
 		suit: card.get('suit')
 	    });
 
 	    var viewID = card.get('value') + '-' + card.get('suit');
-	    view.$el.append($card);
+	    $hand.append($card);
 
-	    var $cardViewEl = view.$el.find('#' + viewID);
+	    var $cardViewEl = $hand.find('#' + viewID);
 	    var cardView = new CardView({
 		el: $cardViewEl,
 		card: card
@@ -71,8 +84,7 @@ return Backbone.View.extend({
 
 	    cardView.render();
 	});
-
-	// view.attachCardListeners();
+	
     },
 
     updateSelectedHand: function() {
@@ -120,7 +132,7 @@ return Backbone.View.extend({
 	
 	var selectedCard = view.cards.find(function(card) {
 	    return (
-		card.displayValue() === value
+		card.get('value') === value
 		&& card.get('suit') === suit
 	    );
 	});
@@ -142,7 +154,7 @@ return Backbone.View.extend({
 	    cards: view.selectedCards
 	});
 	
-	view._showPlayerView();
+	view._renderHand();
     },
 
     turnChangeHandler: function() {
@@ -173,6 +185,7 @@ return Backbone.View.extend({
 	    view.isActivePlayer = (
 		args.activePlayer === player.name
 	    );
+
 	    var cards = _.map(player.hand, function(card) {
 		return new Card(card);
 	    });
