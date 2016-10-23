@@ -2,6 +2,7 @@ define("views/player", [
     'models/player',
     'collections/card',
     'models/card',
+    'views/card',
     'app',
     'socketio',
     'template!templates/card.hbs',
@@ -12,6 +13,7 @@ define("views/player", [
     Player,
     CardCollection,
     Card,
+    CardView,
     CardApp,
     io,
     CardTemplate,
@@ -52,20 +54,25 @@ return Backbone.View.extend({
 
 	view.$el.find('.new-player').hide();
 
-	var cardContexts = view.cards.map(function(card) {
-	    return {
-		value: card.displayValue(),
+	view.cards.map(function(card) {
+	    var $card = CardTemplate({
+		value: card.get('value'),
 		suit: card.get('suit')
-	    };
+	    });
+
+	    var viewID = card.get('value') + '-' + card.get('suit');
+	    view.$el.append($card);
+
+	    var $cardViewEl = view.$el.find('#' + viewID);
+	    var cardView = new CardView({
+		el: $cardViewEl,
+		card: card
+	    });
+
+	    cardView.render();
 	});
 
-	view.$el.find('.player').html(
-	    CardRowTemplate({
-		cards: cardContexts
-	    })
-	);
-
-	view.attachCardListeners();
+	// view.attachCardListeners();
     },
 
     updateSelectedHand: function() {

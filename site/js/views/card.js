@@ -38,7 +38,30 @@ return Backbone.View.extend({
     render: function() {
 	var view = this;
 
-	var card = view.card;
+	var suit = view.$el.data('suit');
+	var cardValue = view.$el.data('value');
+
+	var cardTemplate = view._cardTemplate(cardValue);
+	var suitContext = view._suitContext(suit);
+
+	view.$el.append(
+	    cardTemplate({
+		suit: suitContext
+	    })
+	);
+
+	view.setCardWidth(80);
+    },
+
+    setCardWidth: function(pixels) {
+	var fontsize = pixels * 12.5 / 200;
+	return this.$el.css({
+            'font-size': "" + fontsize + "px"
+	});
+    },
+
+    _suitContext: function(suit) {
+
 	var suitContexts = {
 	    Clubs: {
 		name: 'club',
@@ -62,7 +85,11 @@ return Backbone.View.extend({
 	    }
 	};
 
-	var cardTemplates = [
+	return suitContexts[ suit ];
+    },
+
+    _cardTemplate: function(value) {
+	var templates = [
 	    AceTemplate,
 	    TwoTemplate,
 	    ThreeTemplate,
@@ -78,18 +105,8 @@ return Backbone.View.extend({
 	    KingTemplate
 	];
 
-	var cardTemplate = cardTemplates[ card.get('value') - 1 ];
-	var suitContext = suitContexts[ card.get('suit') ];
-
-	if (cardTemplate) {
-	    view.$el.append(
-		cardTemplate({
-		    suit: suitContext
-		})
-	    );
-	}
+	return templates[ value - 1 ];
     }
-
 });
 
 });
