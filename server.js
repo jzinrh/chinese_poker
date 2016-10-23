@@ -77,27 +77,55 @@ function joinGameHandler(socket, args) {
 			name: args.name
 		});
 
-		var playerNames = _.map(['',' 2',' 3',' 4'], function(i) { return args.name + i; });
+		var playerNames = [];
+		// Uncomment for basic testing
+		// playerNames = _.map(['',' 2',' 3',' 4'], function(i) { return args.name + i; });
 
-		console.log('player names: ' + playerNames);
+		if (gameSockets.length == 4) {
+			playerNames = _.map(gameSockets, function(gameSocket) {
+				return gameSocket['name'];
+			});
 
-		game.newGame({
-			playerNames: playerNames
-		});
+			console.log('player names: ' + playerNames);
 
+			_startGame({
+				game: game,
+				gameSockets: gameSockets,
+				playerNames: playerNames
+			});
+		}
 	}
+}
+
+function _startGame(args) {
+	var game = args.game;
+	var gameSockets = args.gameSockets;
+	var playerNames = args.playerNames;
+
+	game.newGame({
+		playerNames: playerNames
+	});
+
+	var activePlayer = game.activePlayer();
+	console.log('********************************************************************************');
+	console.log('Game started');
 
 	_.each(gameSockets, function(gameSocket) {
-		console.log('name: ' + gameSocket.name);
+		var playerString = gameSocket.name;
+		if (gameSocket.name === activePlayer.get('name')) {
+			playerString += ' * Active Player *';
+		}
+		console.log(playerString);
 
 		var player = game.getPlayer({
 			name: gameSocket.name
 		});
-		var activePlayer = game.activePlayer();
-		console.log(activePlayer.get('name') + ' is the active player.');
+
 		gameSocket.socket.emit('begin', {
 			player: player,
 			activePlayer: activePlayer.get('name')
 		});
 	});
+	console.log('********************************************************************************');
+
 }
