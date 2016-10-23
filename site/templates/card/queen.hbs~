@@ -1,0 +1,11 @@
+<div class="card-queen">
+  <div class="corner top">
+    <span class="number">Q</span>
+    <span>{{{suit.symbol}}}</span>
+  </div>
+  <span class="face middle_center"><img src="img/faces/face-queen-{{suit.name}}.png"/></span>
+  <div class="corner bottom">
+    <span class="number">Q</span>
+    <span>{{{suit.symbol}}}</span>
+  </div>
+</div>

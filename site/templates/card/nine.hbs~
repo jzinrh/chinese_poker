@@ -1,0 +1,19 @@
+<div class="card-nine">
+  <div class="corner top">
+    <span class="number">9</span>
+    <span>{{{suit.symbol}}}</span>
+  </div>
+  <span class="suit top_left">{{{suit.symbol}}}</span>
+  <span class="suit top_right">{{{suit.symbol}}}</span>
+  <span class="suit middle_top_left">{{{suit.symbol}}}</span>
+  <span class="suit middle_center">{{{suit.symbol}}}</span>
+  <span class="suit middle_top_right">{{{suit.symbol}}}</span>
+  <span class="suit bottom_left">{{{suit.symbol}}}</span>
+  <span class="suit bottom_right">{{{suit.symbol}}}</span>
+  <span class="suit middle_bottom_left">{{{suit.symbol}}}</span>
+  <span class="suit middle_bottom_right">{{{suit.symbol}}}</span>
+  <div class="corner bottom">
+    <span class="number">9</span>
+    <span>{{{suit.symbol}}}</span>
+  </div>
+</div>
