@@ -12,7 +12,7 @@ requirejs.config({
 
 var allGameSockets = {};
 var games = {};
-var cardApp = requirejs('app');
+var gameApp = requirejs('app/game');
 
 http.listen(8080, function(){
 	console.log('listening on *:8080');
@@ -61,7 +61,7 @@ function joinGameHandler(socket, args) {
 
 	if (!allGameSockets[ args.game ]) {
 		allGameSockets[ args.game ] = [];
-		games[ args.game ] = new cardApp();
+		games[ args.game ] = new gameApp();
 	}
 
 	var gameSockets = allGameSockets[ args.game ];

@@ -1,6 +1,6 @@
 define("views/game_log", [
 	'models/card',
-	'app',
+	'app/card',
 	'template!templates/played_card.hbs'
 ], function(
 	Card,
@@ -13,15 +13,12 @@ return Backbone.View.extend({
 	initialize: function(args) {
 		var view = this;
 
-		view.app = {};
-		view.app[ 'card' ] = new CardApp();
-
 		view.socket = args.socket;
 	},
 
 	render: function() {
 		var view = this;
-		debugger;
+
 		view.attachListeners();
 	},
 
@@ -35,12 +32,12 @@ return Backbone.View.extend({
 		view.attachedListeners = true;
 
 		view.socket.on('cards played', function(args) {
-			debugger;
+
 			var cards = _.map(args.cards, function(cardContext) {
 				return new Card(cardContext);
 			});
 
-			var handDisplayString = view.app[ 'card' ].handDisplayString(cards);
+			var handDisplayString = CardApp.handDisplayString(cards);
 			view.$el.append(
 				PlayedCardTemplate({
 					player: args.name,

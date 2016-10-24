@@ -1,6 +1,6 @@
 define("views/player", [
 	'views/card',
-	'app',
+	'app/card',
 	'template!templates/card.hbs',
 	'template!templates/card_row.hbs'
 ], function(
@@ -18,9 +18,6 @@ return Backbone.View.extend({
 
 	initialize: function(args) {
 		var view = this;
-
-		view.app = {};
-		view.app[ 'card' ] = new CardApp();
 
 		view.isActivePlayer = true;
 
@@ -103,10 +100,10 @@ return Backbone.View.extend({
 		var $selectedHand = view.$el.find('.selected-hand');
 
 		var selectedHandHTML = '';
-
-		var isValidHand = view.app[ 'card' ].isValidHand(cards);
+		debugger;
+		var isValidHand = CardApp.isValidHand(cards);
 		if (isValidHand) {
-			selectedHandHTML = view.app[ 'card' ].handDisplayString(cards);
+			selectedHandHTML = CardApp.handDisplayString(cards);
 		}
 
 		$selectedHand.html(selectedHandHTML);
