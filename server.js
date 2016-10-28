@@ -36,6 +36,20 @@ io.on('connection', function(socket){
 		playCardsHandler(socket, args);
 	});
 
+	socket.on('pass turn', function(args) {
+		console.log(args.name + ' passed.');
+
+		var gameSockets = allGameSockets[ args.game ];
+		var gameApp = games[ args.game ];
+		var nextPlayer = gameApp.nextActivePlayer();
+
+		_.each(gameSockets, function(gameSocket) {
+			gameSocket.socket.emit('passed turn', args.name);
+			gameSocket.socket.emit('active player', nextPlayer.get('name'));
+		});
+
+	});
+
 	socket.on('join', function(args) {
 		joinGameHandler(socket, args);
 	});
@@ -44,15 +58,14 @@ io.on('connection', function(socket){
 
 function playCardsHandler(socket, args) {
 	console.log(args.name + ' played');
-	var app = games[ args.game ];
+	var gameApp = games[ args.game ];
 
 	var gameSockets = allGameSockets[ args.game ];
-	var nextPlayer = app.nextActivePlayer();
+	var nextPlayer = gameApp.nextActivePlayer();
 
 	_.each(gameSockets, function(gameSocket) {
-		gameSocket.socket.emit('cards played', _.extend(args, {
-			activePlayer: nextPlayer.get('name')
-		}));
+		gameSocket.socket.emit('cards played', args);
+		gameSocket.socket.emit('active player', nextPlayer.get('name'));
 	});
 }
 
@@ -127,6 +140,7 @@ function _startGame(args) {
 
 		gameSocket.socket.emit('begin', {
 			player: player,
+			playerNames: playerNames,
 			gameCode: gameCode,
 			activePlayer: activePlayer.get('name')
 		});

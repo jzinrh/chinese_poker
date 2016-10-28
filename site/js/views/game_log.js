@@ -46,6 +46,12 @@ return Backbone.View.extend({
 			);
 		});
 
+		view.socket.on('passed turn', function(playerName) {
+			view.$el.append(
+				'<div>' + playerName + ' passed their turn.</div>'
+			);
+		});
+
 		return false;
 	}
 

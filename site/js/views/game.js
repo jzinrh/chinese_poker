@@ -5,6 +5,7 @@ define("views/game", [
 	'models/player',
 	'collections/card',
 	'models/card',
+	'template!templates/player.hbs',
 	'socketio'
 ], function(
 	RegistrationView,
@@ -13,6 +14,7 @@ define("views/game", [
 	Player,
 	CardCollection,
 	Card,
+	PlayerTemplate,
 	io
 ) {
 
@@ -72,6 +74,7 @@ return Backbone.View.extend({
 
 			view.playerView = new PlayerView({
 				el: $player,
+				activePlayer: args.activePlayer,
 				socket: view.socket,
 				player: view.player,
 				gameCode: args.gameCode,
@@ -80,8 +83,26 @@ return Backbone.View.extend({
 
 			view.playerView.render();
 
+			var playerNames = args.playerNames;
+			var $allPlayers = view.$el.find('.all-players');
+			_.each(playerNames, function(playerName) {
+				var isActivePlayer = ( playerName === args.activePlayer );
+				$allPlayers.append(PlayerTemplate({
+					name: playerName,
+					activePlayer: isActivePlayer
+				}));
+			});
 		});
 
+		view.socket.on('active player', function(activePlayer) {
+			var $players = view.$el.find('.all-players .player');
+			$players.each(function(index) {
+				var $player = $(this);
+				var playerName = $player.data('name');
+				$player.toggleClass('active-player', playerName === activePlayer);
+			});
+
+		});
 	}
 
 });

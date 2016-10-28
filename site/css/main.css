@@ -9,7 +9,9 @@
     display: flex;
 }
 
-.play-button {
+.play-button,
+.pass-other-button,
+.pass-button {
     height: 40px;
     width: 120px;
     text-align: center;
@@ -21,4 +23,18 @@
 .play-button.enabled {
     border: 1px solid #42f4b9;
     background-color: #adf7de;
+}
+
+.pass-button.enabled {
+    border: 1px solid #42f4b9;
+    background-color: #adf7de;
+}
+
+.pass-other-button.enabled {
+    border: 1px solid #42f4b9;
+    background-color: #adf7de;
+}
+
+.player.active-player {
+	border: 1px solid black;
 }
