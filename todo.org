@@ -1,3 +1,3 @@
-* TODO clean up client side data with singleton app
+* TODO specify client-side libraries in package.json or requirejs so you don't need to include them in git repo
 * TODO add previous card validation logic
 * TODO add new-hand after all pass

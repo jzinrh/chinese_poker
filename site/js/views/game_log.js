@@ -1,20 +1,16 @@
 define("views/game_log", [
 	'models/card',
 	'app/card',
+	'app/client',
 	'template!templates/played_card.hbs'
 ], function(
 	Card,
 	CardApp,
+	ClientApp,
 	PlayedCardTemplate
 ) {
 
 return Backbone.View.extend({
-
-	initialize: function(args) {
-		var view = this;
-
-		view.socket = args.socket;
-	},
 
 	render: function() {
 		var view = this;
@@ -31,25 +27,29 @@ return Backbone.View.extend({
 
 		view.attachedListeners = true;
 
-		view.socket.on('cards played', function(args) {
+		ClientApp.on('stackChange', function() {
+			// TODO: make this a template
+			view.$el.html('');
+			var stack = ClientApp.get('stack');
 
-			var cards = _.map(args.cards, function(cardContext) {
-				return new Card(cardContext);
+			_.each(stack, function(play) {
+				var cards = play.cards;
+				var passed = play.pass;
+				var playerName = play.playerName;
+				var displayString;
+
+				if (passed) {
+					displayString = '<div>' + playerName + ' passed their turn.</div>';
+				}
+				else {
+					displayString = PlayedCardTemplate({
+						player: playerName,
+						contents: CardApp.handDisplayString(cards)
+					});
+				}
+
+				view.$el.append(displayString);
 			});
-
-			var handDisplayString = CardApp.handDisplayString(cards);
-			view.$el.append(
-				PlayedCardTemplate({
-					player: args.name,
-					contents: handDisplayString
-				})
-			);
-		});
-
-		view.socket.on('passed turn', function(playerName) {
-			view.$el.append(
-				'<div>' + playerName + ' passed their turn.</div>'
-			);
 		});
 
 		return false;

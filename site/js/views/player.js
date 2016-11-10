@@ -1,11 +1,13 @@
 define("views/player", [
 	'views/card',
 	'app/card',
+	'app/client',
 	'template!templates/card.hbs',
 	'template!templates/card_row.hbs'
 ], function(
 	CardView,
 	CardApp,
+	ClientApp,
 	CardTemplate,
 	CardRowTemplate
 ) {
@@ -14,18 +16,8 @@ return Backbone.View.extend({
 	events: {
 		'click .card-row:not(.disabled) .card': 'toggleCardSelected',
 		'click .enabled.play-button': 'playSelectedCards',
-		'click .enabled.pass-button': 'passTurn',
-		'click .enabled.pass-other-button': 'passOtherTurn'
-	},
-
-	initialize: function(args) {
-		var view = this;
-
-		view.gameCode = args.gameCode;
-		view.player = args.player;
-		view.activePlayer = args.activePlayer;
-		view.cards = args.cards;
-		view.socket = args.socket;
+		'click .enabled.pass-button': 'passTurnHandler',
+		'click .enabled.pass-other-button': 'passActiveTurnHandler'
 	},
 
 	/********************************************************************************
@@ -52,8 +44,14 @@ return Backbone.View.extend({
 	_syncButtons: function() {
 		var view = this;
 
-		view.$el.find('.pass-other-button').toggleClass('enabled', view.activePlayer !== view.player.get('name'));
-		view.$el.find('.pass-button').toggleClass('enabled', view.activePlayer === view.player.get('name'));
+		var isActivePlayer = ClientApp.get('isActivePlayer');
+		var selectedCards = ClientApp.selectedCards();
+		var isValidHand = CardApp.isValidHand(selectedCards);
+
+		var playButtonEnabled = ( isValidHand && isActivePlayer );
+		view.$el.find('.play-button').toggleClass('enabled', playButtonEnabled);
+		view.$el.find('.pass-other-button').toggleClass('enabled', !isActivePlayer);
+		view.$el.find('.pass-button').toggleClass('enabled', isActivePlayer);
 	},
 
 	/********************************************************************************
@@ -72,8 +70,9 @@ return Backbone.View.extend({
 		var $hand = view.$el.find('.hand');
 		$hand.html('');
 
-		view.cards.map(function(card) {
-
+		var cards = ClientApp.get('cards');
+		cards.map(function(card) {
+			// TODO have template.js auto-convert models to hashes
 			var $card = CardTemplate({
 				value: card.get('value'),
 				suit: card.get('suit')
@@ -106,42 +105,17 @@ return Backbone.View.extend({
 	updateSelectedHand: function() {
 		var view = this;
 
-		var cards = view.selectedCards;
+		var selectedCards = ClientApp.selectedCards();
 		var $selectedHand = view.$el.find('.selected-hand');
 
 		var selectedHandHTML = '';
 
-		var isValidHand = CardApp.isValidHand(cards);
+		var isValidHand = CardApp.isValidHand(selectedCards);
 		if (isValidHand) {
-			selectedHandHTML = CardApp.handDisplayString(cards);
+			selectedHandHTML = CardApp.handDisplayString(selectedCards);
 		}
 
 		$selectedHand.html(selectedHandHTML);
-
-		var playButtonEnabled = ( isValidHand && view.isActivePlayer );
-		view.$el.find('.play-button').toggleClass('enabled', playButtonEnabled);
-		view.$el.find('.pass-button').toggleClass('enabled', !!view.isActivePlayer);
-	},
-
-	/********************************************************************************
-	 * updateSelected
-	 *
-	 * Description:
-	 *  Update the view's current selected cards.
-	 *
-	 * Return:
-	 *  Not meaningful.
-	 ********************************************************************************/
-	updateSelected: function() {
-		var view = this;
-
-		var selectedCards = view.cards.filter(function(card) {
-			return card.get('selected');
-		});
-
-		view.selectedCards = selectedCards;
-
-		view.updateSelectedHand();
 	},
 
 	/********************************************************************************
@@ -161,15 +135,16 @@ return Backbone.View.extend({
 		var value = $card.data('value');
 		var suit = $card.data('suit');
 		var selected = $card.hasClass('selected');
-
-		if (!selected && view.selectedCards && view.selectedCards.length == 5) {
+		var selectedCards = ClientApp.selectedCards();
+		if (!selected && selectedCards && selectedCards.length == 5) {
 			return false;
 		}
 
-		var selectedCard = view.cards.find(function(card) {
+		var cards = ClientApp.get('cards');
+		var selectedCard = cards.find(function(card) {
 			return (
 				card.get('value') === value
-		&& card.get('suit') === suit
+				&& card.get('suit') === suit
 			);
 		});
 
@@ -192,17 +167,11 @@ return Backbone.View.extend({
 	playSelectedCards: function() {
 		var view = this;
 
-		view.cards.remove(view.selectedCards);
-
-		view.socket.emit('play cards', {
-			game: view.gameCode,
-			name: view.player.get('name'),
-			cards: view.selectedCards
-		});
+		ClientApp.playCards();
 
 		view._renderHand();
 		view._syncButtons();
-		view.updateSelected();
+		view.updateSelectedHand();
 	},
 
 	/********************************************************************************
@@ -214,17 +183,14 @@ return Backbone.View.extend({
 	 * Return:
 	 *  Not meaningful.
 	 ********************************************************************************/
-	passTurn: function() {
+	passTurnHandler: function() {
 		var view = this;
 
-		view.socket.emit('pass turn', {
-			game: view.gameCode,
-			name: view.player.get('name')
-		});
+		ClientApp.passTurn();
 	},
 
 	/********************************************************************************
-	 * passOtherTurn
+	 * passActiveTurnHandler
 	 *
 	 * Description:
 	 *  Pass the turn
@@ -232,13 +198,10 @@ return Backbone.View.extend({
 	 * Return:
 	 *  Not meaningful.
 	 ********************************************************************************/
-	passOtherTurn: function() {
+	passActiveTurnHandler: function() {
 		var view = this;
 
-		view.socket.emit('pass turn', {
-			game: view.gameCode,
-			name: view.activePlayer
-		});
+		ClientApp._passActiveTurn();
 	},
 
 	attachListeners: function() {
@@ -250,17 +213,14 @@ return Backbone.View.extend({
 
 		view.attachedCardListeners = true;
 
-		view.listenTo(view.cards, 'change:selected', function() {
-			view.updateSelected();
+		var cards = ClientApp.get('cards');
+		// TODO can we use change:selected here?
+		cards.on('change:selected', function() {
+			view.updateSelectedHand();
+			view._syncButtons();
 		});
 
-		view.listenTo(view, 'change:isActivePlayer', function() {
-			view.updateSelected();
-		});
-
-		view.socket.on('active player', function(activePlayer) {
-			view.activePlayer = activePlayer;
-			view.isActivePlayer = (activePlayer === view.player.get('name'));
+		ClientApp.on('change:isActivePlayer', function() {
 			view._syncButtons();
 		});
 

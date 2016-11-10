@@ -33,6 +33,7 @@ io.on('connection', function(socket){
 	console.log('a user connected ' + socket.id);
 
 	socket.on('play cards', function(args) {
+		// TODO add same validation
 		playCardsHandler(socket, args);
 	});
 
@@ -42,10 +43,11 @@ io.on('connection', function(socket){
 		var gameSockets = allGameSockets[ args.game ];
 		var gameApp = games[ args.game ];
 		var nextPlayer = gameApp.nextActivePlayer();
-
+		var activePlayerName = nextPlayer.get('name');
 		_.each(gameSockets, function(gameSocket) {
 			gameSocket.socket.emit('passed turn', args.name);
-			gameSocket.socket.emit('active player', nextPlayer.get('name'));
+			gameSocket.socket.emit('active player', activePlayerName);
+			console.log(activePlayerName + ' is the active player');
 		});
 
 	});
@@ -92,7 +94,7 @@ function joinGameHandler(socket, args) {
 
 		var playerNames = [];
 		// Uncomment for basic testing
-		playerNames = _.map(['',' 2',' 3',' 4'], function(i) { return args.name + i; });
+		// playerNames = _.map(['',' 2',' 3',' 4'], function(i) { return args.name + i; });
 
 		if (gameSockets.length == 4) {
 			playerNames = _.map(gameSockets, function(gameSocket) {

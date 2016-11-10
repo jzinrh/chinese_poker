@@ -1,18 +1,21 @@
 define("views/registration", [
-	'template!templates/new_player.hbs'
+	'template!templates/new_player.hbs',
+	'app/client'
 ], function(
-	NewPlayerTemplate
+	NewPlayerTemplate,
+	ClientApp
 ) {
 
 return Backbone.View.extend({
 	events: {
+		// TODO: validation on join button
 		'click .join-button': 'join'
 	},
 
 	initialize: function(args) {
 		var view = this;
 
-		view.socket = args.socket;
+		view.socket = ClientApp.socket;
 	},
 
 	/********************************************************************************
@@ -72,12 +75,10 @@ return Backbone.View.extend({
 	join: function() {
 		var view = this;
 
-		var gameArgs = {
+		ClientApp.joinGame({
 			name: view.$playerName.val(),
 			game: view.$gameCode.val()
-		};
-
-		view.socket.emit('join', gameArgs);
+		});
 	}
 
 });

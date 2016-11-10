@@ -1,32 +1,24 @@
 define("views/game", [
+	'app/client',
 	'views/registration',
 	'views/player',
 	'views/game_log',
 	'models/player',
 	'collections/card',
 	'models/card',
-	'template!templates/player.hbs',
-	'socketio'
+	'template!templates/player.hbs'
 ], function(
+	ClientApp,
 	RegistrationView,
 	PlayerView,
 	GameLogView,
 	Player,
 	CardCollection,
 	Card,
-	PlayerTemplate,
-	io
+	PlayerTemplate
 ) {
 
 return Backbone.View.extend({
-
-	initialize: function() {
-		var view = this;
-
-		var url = 'http://localhost:8080';
-		view.socket = io.connect(url);
-
-	},
 
 	render: function() {
 		var view = this;
@@ -35,13 +27,11 @@ return Backbone.View.extend({
 		var $gameLog = view.$el.find('.game-log');
 
 		view.registrationView = new RegistrationView({
-			el: $registration,
-			socket: view.socket
+			el: $registration
 		});
 
 		view.gameLogView = new GameLogView({
-			el: $gameLog,
-			socket: view.socket
+			el: $gameLog
 		});
 
 		view.registrationView.render();
@@ -53,40 +43,26 @@ return Backbone.View.extend({
 	attachListeners: function() {
 		var view = this;
 
-		var $player = view.$el.find('.player');
-
-		// When the game begins, switch to the in-game player view.
-		view.socket.on('begin', function(args) {
-			var player = args.player;
-
-			var cards = _.map(player.hand, function(card) {
-				return new Card(card);
-			});
-
-			var playerHand = new CardCollection(cards);
-
-			view.player = new Player({
-				name: player.name,
-				hand: playerHand
-			});
-
-			view.cards = view.player.get('hand');
+		// TODO: when the player is SET, not necessarily changed
+		ClientApp.on('change:player', function() {
+			// TODO: this should already be rendered, and listening on the change of player in the player view.
+			var $player = view.$el.find('.player');
 
 			view.playerView = new PlayerView({
-				el: $player,
-				activePlayer: args.activePlayer,
-				socket: view.socket,
-				player: view.player,
-				gameCode: args.gameCode,
-				cards: view.cards
+				el: $player
 			});
 
 			view.playerView.render();
+		});
 
-			var playerNames = args.playerNames;
+		// The following is just for the players/whose turn it is
+		ClientApp.on('change:playerNames', function() {
+			var playerNames = ClientApp.get('playerNames');
+			var activePlayer = ClientApp.get('activePlayer');
 			var $allPlayers = view.$el.find('.all-players');
+
 			_.each(playerNames, function(playerName) {
-				var isActivePlayer = ( playerName === args.activePlayer );
+				var isActivePlayer = ( playerName === activePlayer );
 				$allPlayers.append(PlayerTemplate({
 					name: playerName,
 					activePlayer: isActivePlayer
@@ -94,14 +70,15 @@ return Backbone.View.extend({
 			});
 		});
 
-		view.socket.on('active player', function(activePlayer) {
+		ClientApp.on('change:activePlayer', function() {
+			var activePlayer = ClientApp.get('activePlayer');
 			var $players = view.$el.find('.all-players .player');
+
 			$players.each(function(index) {
 				var $player = $(this);
 				var playerName = $player.data('name');
 				$player.toggleClass('active-player', playerName === activePlayer);
 			});
-
 		});
 	}
 
