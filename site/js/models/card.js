@@ -13,6 +13,19 @@ return Backbone.Model.extend({
 		13: 'King'
 	},
 
+	suitLookup: {
+		1: 'Diamonds',
+		2: 'Clubs',
+		3: 'Hearts',
+		4: 'Spades'
+	},
+
+	suitValue: function() {
+		var card = this;
+
+		return card.suitLookup[ card.get('suit') ];
+	},
+
 	displayValue: function() {
 		var card = this;
 
@@ -22,6 +35,21 @@ return Backbone.Model.extend({
 		}
 
 		return value;
+	},
+
+	toString: function() {
+		var card = this;
+
+		return card.displayValue() + ' of ' + card.get('suit');
+	},
+
+	toShortString: function() {
+		var card = this;
+
+		debugger;
+		var displayValue = card.displayValue();
+		var suit = card.get('suit');
+		return String(displayValue)[0] + suit[0];
 	}
 
 });

@@ -17,6 +17,7 @@ define("app/client", [
 var clientApp = Backbone.Model.extend({
 	socket: io.connect('http://localhost:8080'),
 
+
 	// This probably shouldn't be in the socket app, and instead in the game or utils app?
 	selectedCards: function() {
 		var app = this;
@@ -84,6 +85,7 @@ var ClientApp = new clientApp();
 ClientApp.socket.on('begin', function(args) {
 	var player = args.player;
 
+	ClientApp.set('log', []);
 	ClientApp.set('stack', []);
 
 	var cards = _.map(player.hand, function(card) {
@@ -99,6 +101,7 @@ ClientApp.socket.on('begin', function(args) {
 
 	ClientApp.set({
 		player: playerModel,
+		playerNames: args.playerNames,
 		activePlayer: args.activePlayer,
 		isActivePlayer: ( args.activePlayer === playerModel.get('name') ),
 		gameCode: args.gameCode,
@@ -108,34 +111,47 @@ ClientApp.socket.on('begin', function(args) {
 
 ClientApp.socket.on('cards played', function(args) {
 	var stack = ClientApp.get('stack');
+	var log = ClientApp.get('log');
 
 	var cards = _.map(args.cards, function(cardContext) {
 		return new Card(cardContext);
 	});
 
-	stack.push({
+	var play = {
 		cards: cards,
 		playerName: args.name
-	});
+	};
 
-	ClientApp.set('stack', stack);
-	ClientApp.trigger('stackChange');
+	// Add this to two collections, as the stack only holds non-passing plays
+	stack.push(play);
+	log.push(play);
+
+	// log.set('stack', stack);
+	ClientApp.trigger('logChange');
 });
 
 ClientApp.socket.on('passed turn', function(playerName) {
+	var log = ClientApp.get('log');
 	var stack = ClientApp.get('stack');
 
-	stack.push({
+	log.push({
 		pass: true,
 		playerName: playerName
 	});
 
-	ClientApp.set('stack', stack);
-	ClientApp.trigger('stackChange');
+	// ClientApp.set('stack', stack);
+	ClientApp.trigger('logChange');
 });
 
 ClientApp.socket.on('active player', function(activePlayer) {
 	var player = ClientApp.get('player');
+	var stack = ClientApp.get('stack');
+	var lastPlay = _.last(stack);
+
+	// Wipe out the stack if the active player made the last play.
+	if (lastPlay && lastPlay.playerName === activePlayer) {
+		ClientApp.set('stack', []);
+	}
 
 	ClientApp.set({
 		activePlayer: activePlayer,

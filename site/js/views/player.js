@@ -45,10 +45,9 @@ return Backbone.View.extend({
 		var view = this;
 
 		var isActivePlayer = ClientApp.get('isActivePlayer');
-		var selectedCards = ClientApp.selectedCards();
-		var isValidHand = CardApp.isValidHand(selectedCards);
+		var isValidPlay = CardApp.isValidNextPlay();
 
-		var playButtonEnabled = ( isValidHand && isActivePlayer );
+		var playButtonEnabled = ( isValidPlay && isActivePlayer );
 		view.$el.find('.play-button').toggleClass('enabled', playButtonEnabled);
 		view.$el.find('.pass-other-button').toggleClass('enabled', !isActivePlayer);
 		view.$el.find('.pass-button').toggleClass('enabled', isActivePlayer);
@@ -110,7 +109,7 @@ return Backbone.View.extend({
 
 		var selectedHandHTML = '';
 
-		var isValidHand = CardApp.isValidHand(selectedCards);
+		var isValidHand = CardApp.isValidHand();
 		if (isValidHand) {
 			selectedHandHTML = CardApp.handDisplayString(selectedCards);
 		}

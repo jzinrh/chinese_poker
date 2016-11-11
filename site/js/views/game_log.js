@@ -27,15 +27,16 @@ return Backbone.View.extend({
 
 		view.attachedListeners = true;
 
-		ClientApp.on('stackChange', function() {
+		ClientApp.on('logChange', function() {
 			// TODO: make this a template
+			// TODO: quit re-rendering the entire thing.
 			view.$el.html('');
-			var stack = ClientApp.get('stack');
+			var log = ClientApp.get('log');
 
-			_.each(stack, function(play) {
-				var cards = play.cards;
-				var passed = play.pass;
-				var playerName = play.playerName;
+			_.each(log, function(turn) {
+				var cards = turn.cards;
+				var passed = turn.pass;
+				var playerName = turn.playerName;
 				var displayString;
 
 				if (passed) {
