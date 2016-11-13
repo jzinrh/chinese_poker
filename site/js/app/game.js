@@ -1,7 +1,7 @@
-define("app/game", [
+define("js/app/game", [
 	'backbone',
 	'underscore',
-	'models/game'
+	'js/models/game'
 ], function(
 	Backbone,
 	_,

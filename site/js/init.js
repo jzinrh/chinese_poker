@@ -20,7 +20,7 @@ requirejs.config({
 
 requirejs([
 	'jquery',
-	'views/game'
+	'js/views/game'
 ], function(
 	$,
 	GameView

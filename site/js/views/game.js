@@ -1,11 +1,11 @@
-define("views/game", [
-	'app/client',
-	'views/registration',
-	'views/player',
-	'views/game_log',
-	'models/player',
-	'collections/card',
-	'models/card',
+define("js/views/game", [
+	'js/app/client',
+	'js/views/registration',
+	'js/views/player',
+	'js/views/game_log',
+	'js/models/player',
+	'js/collections/card',
+	'js/models/card',
 	'template!templates/player.hbs'
 ], function(
 	ClientApp,

@@ -1,7 +1,7 @@
-define("views/player", [
-	'views/card',
-	'app/card',
-	'app/client',
+define("js/views/player", [
+	'js/views/card',
+	'js/app/card',
+	'js/app/client',
 	'template!templates/card.hbs',
 	'template!templates/card_row.hbs'
 ], function(

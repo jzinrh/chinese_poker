@@ -1,6 +1,6 @@
-define("views/registration", [
+define("js/views/registration", [
 	'template!templates/new_player.hbs',
-	'app/client'
+	'js/app/client'
 ], function(
 	NewPlayerTemplate,
 	ClientApp

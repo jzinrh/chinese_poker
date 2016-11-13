@@ -1,9 +1,9 @@
 //TODO: this should probably be a base version, because it uses client
 
-define("app/card", [
+define("js/app/card", [
 	'backbone',
 	'underscore',
-	'app/client'
+	'js/app/client'
 ], function(
 	Backbone,
 	_,

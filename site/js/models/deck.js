@@ -1,6 +1,6 @@
-define("models/deck", [
-	'models/card',
-	'collections/card',
+define("js/models/deck", [
+	'js/models/card',
+	'js/collections/card',
 	'underscore'
 ], function(
 	Card,

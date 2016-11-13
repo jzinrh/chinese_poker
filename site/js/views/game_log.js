@@ -1,7 +1,7 @@
-define("views/game_log", [
-	'models/card',
-	'app/card',
-	'app/client',
+define("js/views/game_log", [
+	'js/models/card',
+	'js/app/card',
+	'js/app/client',
 	'template!templates/played_card.hbs'
 ], function(
 	Card,

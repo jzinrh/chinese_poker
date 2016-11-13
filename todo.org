@@ -3,4 +3,4 @@
 * TODO write tests that extend game model (e.g. deal out straight flushes and stuff), pass in args through start-up (e.g. node server.js --test myTestCase)
 * TODO add the playerNames queue to the registration page
 * TODO add create game button that generates game code
-
+* TODO remove pass other button

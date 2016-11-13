@@ -1,5 +1,5 @@
-define("collections/card", [
-	'models/card',
+define("js/collections/card", [
+	'js/models/card',
 	'backbone'
 ], function(
 	Card,

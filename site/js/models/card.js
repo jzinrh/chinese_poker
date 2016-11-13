@@ -1,4 +1,4 @@
-define("models/card", [
+define("js/models/card", [
 	'backbone'
 ], function(
 	Backbone

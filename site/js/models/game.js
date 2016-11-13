@@ -1,7 +1,7 @@
-define("models/game", [
-	'models/deck',
-	'models/player',
-	'collections/card',
+define("js/models/game", [
+	'js/models/deck',
+	'js/models/player',
+	'js/collections/card',
 	'backbone',
 	'underscore'
 ], function(

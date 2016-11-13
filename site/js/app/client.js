@@ -1,9 +1,9 @@
-define("app/client", [
+define("js/app/client", [
 	'backbone',
 	'socketio',
-	'models/card',
-	'models/player',
-	'collections/card'
+	'js/models/card',
+	'js/models/player',
+	'js/collections/card'
 ], function(
 	Backbone,
 	io,
@@ -16,7 +16,6 @@ define("app/client", [
 // Goal is to consolidate the shared data between the views, and have a single server/client relationship for messages.
 var clientApp = Backbone.Model.extend({
 	socket: io.connect('http://localhost:8080'),
-
 
 	// This probably shouldn't be in the socket app, and instead in the game or utils app?
 	selectedCards: function() {
@@ -81,6 +80,10 @@ var clientApp = Backbone.Model.extend({
 });
 
 var ClientApp = new clientApp();
+
+ClientApp.socket.on('player', function(playerNames) {
+	ClientApp.set('playerNames', playerNames);
+});
 
 ClientApp.socket.on('begin', function(args) {
 	var player = args.player;

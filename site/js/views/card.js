@@ -1,4 +1,4 @@
-define("views/card", [
+define("js/views/card", [
 	'template!templates/card/ace.hbs',
 	'template!templates/card/two.hbs',
 	'template!templates/card/three.hbs',

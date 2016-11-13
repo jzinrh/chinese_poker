@@ -1,4 +1,4 @@
-define("models/player", [
+define("js/models/player", [
 	'backbone'
 ], function(
 	Backbone

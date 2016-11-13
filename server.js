@@ -6,13 +6,16 @@ var _ = require('underscore');
 
 // TODO: configure node require to include site/js
 var requirejs = require('requirejs');
+
 requirejs.config({
-	baseUrl: __dirname + '/site/js'
+	baseUrl: __dirname + '/site',
+	nodeRequire: require
 });
+console.log(__dirname);
 
 var allGameSockets = {};
 var games = {};
-var gameApp = requirejs('app/game');
+var gameApp = requirejs('js/app/game');
 
 http.listen(8080, function(){
 	console.log('listening on *:8080');
