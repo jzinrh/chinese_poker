@@ -96,8 +96,6 @@ var cardApp = Backbone.Model.extend({
 			}
 			else if (handType === 'Straight') {
 				isValidNextPlay = lastCardIsHigher;
-				// TODO compare full house/bomb by prominent card
-				// TODO compare straight flush by suit, and then high card
 			}
 			else if (_.contains(['Flush', 'Straight Flush'], handType)) {
 				isValidNextPlay = (

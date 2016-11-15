@@ -32,13 +32,18 @@ return Backbone.View.extend({
 	render: function() {
 		var view = this;
 
+		view.attachListeners();
+	},
+
+	renderPlayer: function() {
+		var view = this;
+
 		view.$el.append(CardRowTemplate());
 
 		view._renderHand();
 
 		view._syncButtons();
 
-		view.attachListeners();
 	},
 
 	_syncButtons: function() {
@@ -206,20 +211,30 @@ return Backbone.View.extend({
 	attachListeners: function() {
 		var view = this;
 
-		if (view.attachedCardListeners) {
+		if (view.attachedListeners) {
 			return false;
 		}
 
-		view.attachedCardListeners = true;
+		view.attachedListeners = true;
 
-		var cards = ClientApp.get('cards');
-		// TODO can we use change:selected here?
-		cards.on('change:selected', function() {
-			view.updateSelectedHand();
+		ClientApp.on('change:player', function() {
+			view.renderPlayer();
+			view.attachCardListeners();
+		});
+
+		return false;
+	},
+
+	attachCardListeners: function() {
+		var view = this;
+
+		ClientApp.on('change:isActivePlayer', function() {
 			view._syncButtons();
 		});
 
-		ClientApp.on('change:isActivePlayer', function() {
+		var cards = ClientApp.get('cards');
+		cards.on('change:selected', function() {
+			view.updateSelectedHand();
 			view._syncButtons();
 		});
 

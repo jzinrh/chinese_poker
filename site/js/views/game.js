@@ -25,6 +25,7 @@ return Backbone.View.extend({
 
 		var $registration = view.$el.find('.registration');
 		var $gameLog = view.$el.find('.game-log');
+		var $player = view.$el.find('.player');
 
 		view.registrationView = new RegistrationView({
 			el: $registration
@@ -34,26 +35,19 @@ return Backbone.View.extend({
 			el: $gameLog
 		});
 
+		view.playerView = new PlayerView({
+			el: $player
+		});
+
 		view.registrationView.render();
 		view.gameLogView.render();
+		view.playerView.render();
 
 		view.attachListeners();
 	},
 
 	attachListeners: function() {
 		var view = this;
-
-		// TODO: when the player is SET, not necessarily changed
-		ClientApp.on('change:player', function() {
-			// TODO: this should already be rendered, and listening on the change of player in the player view.
-			var $player = view.$el.find('.player');
-
-			view.playerView = new PlayerView({
-				el: $player
-			});
-
-			view.playerView.render();
-		});
 
 		// The following is just for the players/whose turn it is
 		ClientApp.on('change:playerNames', function() {
