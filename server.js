@@ -11,7 +11,6 @@ requirejs.config({
 	baseUrl: __dirname + '/site',
 	nodeRequire: require
 });
-console.log(__dirname);
 
 var allGameSockets = {};
 var games = {};
@@ -96,14 +95,19 @@ function joinGameHandler(socket, args) {
 		});
 
 		var playerNames = [];
-		// Uncomment for basic testing
-		playerNames = _.map(['',' 2',' 3',' 4'], function(i) { return args.name + i; });
-
-		if (gameSockets.length == 4) {
+		// Change to 1 for basic testing
+		if (0) {
+			playerNames = _.map(['',' 2',' 3',' 4'], function(i) { return args.name + i; });
+		}
+		else {
 			playerNames = _.map(gameSockets, function(gameSocket) {
 				return gameSocket['name'];
 			});
 		}
+
+		_.map(gameSockets, function(gameSocket) {
+			return gameSocket.socket.emit('players', playerNames);
+		});
 
 		if (playerNames.length == 4) {
 			console.log('player names: ' + playerNames);
@@ -145,7 +149,6 @@ function _startGame(args) {
 
 		gameSocket.socket.emit('begin', {
 			player: player,
-			playerNames: playerNames,
 			gameCode: gameCode,
 			activePlayer: activePlayer.get('name')
 		});

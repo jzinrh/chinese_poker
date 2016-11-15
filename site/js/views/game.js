@@ -1,21 +1,21 @@
 define("js/views/game", [
 	'js/app/client',
+	'js/views/player_status',
 	'js/views/registration',
 	'js/views/player',
 	'js/views/game_log',
 	'js/models/player',
 	'js/collections/card',
-	'js/models/card',
-	'template!templates/player.hbs'
+	'js/models/card'
 ], function(
 	ClientApp,
+	PlayerStatusView,
 	RegistrationView,
 	PlayerView,
 	GameLogView,
 	Player,
 	CardCollection,
-	Card,
-	PlayerTemplate
+	Card
 ) {
 
 return Backbone.View.extend({
@@ -23,9 +23,14 @@ return Backbone.View.extend({
 	render: function() {
 		var view = this;
 
+		var $playerStatus = view.$el.find('.player-status');
 		var $registration = view.$el.find('.registration');
 		var $gameLog = view.$el.find('.game-log');
 		var $player = view.$el.find('.player');
+
+		view.playerStatusView = new PlayerStatusView({
+			el: $playerStatus
+		});
 
 		view.registrationView = new RegistrationView({
 			el: $registration
@@ -39,43 +44,11 @@ return Backbone.View.extend({
 			el: $player
 		});
 
+		view.playerStatusView.render();
 		view.registrationView.render();
 		view.gameLogView.render();
 		view.playerView.render();
-
-		view.attachListeners();
-	},
-
-	attachListeners: function() {
-		var view = this;
-
-		// The following is just for the players/whose turn it is
-		ClientApp.on('change:playerNames', function() {
-			var playerNames = ClientApp.get('playerNames');
-			var activePlayer = ClientApp.get('activePlayer');
-			var $allPlayers = view.$el.find('.all-players');
-
-			_.each(playerNames, function(playerName) {
-				var isActivePlayer = ( playerName === activePlayer );
-				$allPlayers.append(PlayerTemplate({
-					name: playerName,
-					activePlayer: isActivePlayer
-				}));
-			});
-		});
-
-		ClientApp.on('change:activePlayer', function() {
-			var activePlayer = ClientApp.get('activePlayer');
-			var $players = view.$el.find('.all-players .player');
-
-			$players.each(function(index) {
-				var $player = $(this);
-				var playerName = $player.data('name');
-				$player.toggleClass('active-player', playerName === activePlayer);
-			});
-		});
 	}
-
 });
 
 });

@@ -81,7 +81,7 @@ var clientApp = Backbone.Model.extend({
 
 var ClientApp = new clientApp();
 
-ClientApp.socket.on('player', function(playerNames) {
+ClientApp.socket.on('players', function(playerNames) {
 	ClientApp.set('playerNames', playerNames);
 });
 
@@ -104,7 +104,6 @@ ClientApp.socket.on('begin', function(args) {
 
 	ClientApp.set({
 		player: playerModel,
-		playerNames: args.playerNames,
 		activePlayer: args.activePlayer,
 		isActivePlayer: ( args.activePlayer === playerModel.get('name') ),
 		gameCode: args.gameCode,
