@@ -46,7 +46,6 @@ return Backbone.Model.extend({
 	toShortString: function() {
 		var card = this;
 
-		debugger;
 		var displayValue = card.displayValue();
 		var suit = card.get('suit');
 		return String(displayValue)[0] + suit[0];
