@@ -15,7 +15,7 @@ game
 * TODO Add server side validation for playing cards
 * TODO don't re-render entire game log every time someone makes a play
 * TODO 5 card hand display should look better
-* TODO overlap cards for player hand
+* TODO dont overlap cards for player hand when you don't need to
 
 personal/git
 * TODO learn to use magit

@@ -6,6 +6,18 @@
 	font-style: normal;
 }
 
+.card-row {
+    display: flex;
+}
+
+.card-row.collapsed > .card  ~ .card {
+	margin-left: -60px;
+}
+
+.card-row.collapsed > .card {
+	margin-left: 0px;
+}
+
 .card.selected {
 	background-color: #A0D2E5
 }
