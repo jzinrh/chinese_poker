@@ -14,10 +14,10 @@ return Backbone.Model.extend({
 	},
 
 	suitLookup: {
-		1: 'Diamonds',
-		2: 'Clubs',
-		3: 'Hearts',
-		4: 'Spades'
+		'Diamonds': 1,
+		'Clubs': 2,
+		'Hearts': 3,
+		'Spades': 4
 	},
 
 	suitValue: function() {

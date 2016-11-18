@@ -1,22 +1,25 @@
 .play-button,
 .pass-other-button,
 .pass-button {
-    height: 40px;
-    width: 120px;
+	padding: 15px;
+	height: 20px;
+    width: 90px;
     text-align: center;
 
     border: 1px solid #cedbd6;
     background-color: #dce5e2;
+
 }
 
+.pass-button {
+	font-family: cursive;
+	font-weight: bolder;
+}
+
+.pass-button.enabled,
 .play-button.enabled {
-    border: 1px solid #42f4b9;
-    background-color: #adf7de;
-}
-
-.pass-button.enabled {
-    border: 1px solid #42f4b9;
-    background-color: #adf7de;
+	color: #55AA66;
+	background-color: #EEE
 }
 
 .pass-other-button.enabled {
@@ -24,6 +27,39 @@
     background-color: #adf7de;
 }
 
-.player.active-player {
-	border: 1px solid black;
+#game > li {
+	display: flex;
+}
+
+#game {
+	list-style-type: none;
+	padding: 0px;
+}
+
+.player-status {
+	width: 20%;
+}
+
+.play-area {
+	width: 45%;
+}
+
+.game-log {
+	width: 30%;
+	height: 300px;
+	overflow-y: scroll;
+}
+
+.player {
+	display: flex;
+}
+
+.active-player-icon {
+	margin-right: 5px;
+	width: 20px;
+}
+
+.active-player .active-player-icon {
+	background-image: url('http://www.freeiconspng.com/uploads/star-icon-2.jpg');
+	background-size: 20px 20px;
 }
