@@ -7,11 +7,11 @@
 - add create game button that generates game code
 - add win condition (e.g. you win when you run out of cards)
 - add 3 of diamonds validation (must play 3 of diamonds on first turn)
+- add a start game button to support 3 player chinese poker (add the last card to the game log, e.g. Jim gets the Jack of Hearts)
+- J-2 and 10-A straights
+- make ace/2 high cards
 
-* bugs
-- fix 5 card hand comparison
-
-* polish (there should be a lot here, but i'm lazy.
+* polish (there should be a lot here, but i'm lazy with todos)
 - remove pass other button
 
 

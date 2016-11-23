@@ -174,7 +174,13 @@ var cardApp = Backbone.Model.extend({
 			.value();
 		var mostProminentCardValue = mostProminentCard.get('value');
 
-		var uniqueCards = _.keys(groupedCards).sort();
+		var uniqueCards = _.sortBy(
+			_.keys(groupedCards),
+			function(cardValue) {
+				return Number(cardValue);
+			}
+		);
+
 		var uniqueSuits = _.uniq(cards, function(card) {
 			return card.get('suit');
 		});

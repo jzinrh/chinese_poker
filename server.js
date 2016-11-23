@@ -96,7 +96,7 @@ function joinGameHandler(socket, args) {
 
 		var playerNames = [];
 		// Change to 1 for basic testing
-		if (0) {
+		if (1) {
 			playerNames = _.map(['',' 2',' 3',' 4'], function(i) { return args.name + i; });
 		}
 		else {
