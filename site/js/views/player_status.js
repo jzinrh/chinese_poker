@@ -39,7 +39,7 @@ return Backbone.View.extend({
 
 		ClientApp.on('change:activePlayer', function() {
 			var activePlayer = ClientApp.get('activePlayer');
-			var $players = view.$el.find('.player');
+			var $players = view.$el.find('.player-item');
 
 			$players.each(function(index) {
 				var $player = $(this);

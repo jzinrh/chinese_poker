@@ -34,6 +34,7 @@ return Backbone.View.extend({
 		var view = this;
 
 		view.card = args.card;
+		view.width = args.width;
 	},
 
 	render: function() {
@@ -51,7 +52,12 @@ return Backbone.View.extend({
 			})
 		);
 
-		view.setCardWidth(80);
+		var cardWidth = 80;
+		if (view.width) {
+			cardWidth = view.width;
+		}
+
+		view.setCardWidth(cardWidth);
 	},
 
 	setCardWidth: function(pixels) {

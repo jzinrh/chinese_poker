@@ -3,6 +3,7 @@ define("js/views/game", [
 	'js/views/player_status',
 	'js/views/registration',
 	'js/views/player',
+	'js/views/play_area',
 	'js/views/game_log',
 	'js/models/player',
 	'js/collections/card',
@@ -12,6 +13,7 @@ define("js/views/game", [
 	PlayerStatusView,
 	RegistrationView,
 	PlayerView,
+	PlayAreaView,
 	GameLogView,
 	Player,
 	CardCollection,
@@ -27,6 +29,7 @@ return Backbone.View.extend({
 		var $registration = view.$el.find('.registration');
 		var $gameLog = view.$el.find('.game-log');
 		var $player = view.$el.find('.player');
+		var $playArea = view.$el.find('.play-area');
 
 		view.playerStatusView = new PlayerStatusView({
 			el: $playerStatus
@@ -44,10 +47,15 @@ return Backbone.View.extend({
 			el: $player
 		});
 
+		view.playAreaView = new PlayAreaView({
+			el: $playArea
+		});
+
 		view.playerStatusView.render();
 		view.registrationView.render();
 		view.gameLogView.render();
 		view.playerView.render();
+		view.playAreaView.render();
 	}
 });
 

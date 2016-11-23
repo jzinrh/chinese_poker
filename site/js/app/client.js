@@ -128,20 +128,18 @@ ClientApp.socket.on('cards played', function(args) {
 	stack.push(play);
 	log.push(play);
 
-	// log.set('stack', stack);
+	ClientApp.trigger('stackChange');
 	ClientApp.trigger('logChange');
 });
 
 ClientApp.socket.on('passed turn', function(playerName) {
 	var log = ClientApp.get('log');
-	var stack = ClientApp.get('stack');
 
 	log.push({
 		pass: true,
 		playerName: playerName
 	});
 
-	// ClientApp.set('stack', stack);
 	ClientApp.trigger('logChange');
 });
 
@@ -153,6 +151,7 @@ ClientApp.socket.on('active player', function(activePlayer) {
 	// Wipe out the stack if the active player made the last play.
 	if (lastPlay && lastPlay.playerName === activePlayer) {
 		ClientApp.set('stack', []);
+		ClientApp.trigger('stackChange');
 	}
 
 	ClientApp.set({

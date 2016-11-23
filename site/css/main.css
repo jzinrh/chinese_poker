@@ -50,7 +50,11 @@
 	overflow-y: scroll;
 }
 
-.player {
+.player-hand {
+	display: flex;
+}
+
+.player-item {
 	display: flex;
 }
 
