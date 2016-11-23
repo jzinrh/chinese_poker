@@ -1,42 +1,27 @@
-infrastructure/test
-* TODO drag/drop hand order (e.g. modify order of player.get('hand')
-* TODO template.js should auto-convert models to hashes
-* TODO write tests that extend game model (e.g. deal out straight flushes and stuff), pass in args through start-up (e.g. node server.js --test myTestCase)
-* TODO remove pass other button
-* TODO convert site/js/lib to npm modules, use browserfy to create a single bundle of lib js, remove those lib things from the require statements ( they should be available globally? )
-* TODO configure node require to include site/js
+* new features
+- drag/drop hand order (e.g. modify order of player.get('hand')
+- re-join game
+- pass disabled for freebie
+- validation on join button in registration view
+  - should require game code and user name to look enabled
+- add create game button that generates game code
+- add win condition (e.g. you win when you run out of cards)
+- add 3 of diamonds validation (must play 3 of diamonds on first turn)
 
-game
-* TODO re-join game
-* TODO pass disabled for freebie
-* TODO fix 5 card hand comparison
-* TODO create a template for game log view
-* TODO validation on join button in registration view
-* TODO add create game button that generates game code
-* TODO add win condition
-* TODO add 3 of diamonds validation
-* TODO Add server side validation for playing cards
-* TODO don't re-render entire game log every time someone makes a play
-* TODO 5 card hand display should look better
-* TODO dont overlap cards for player hand when you don't need to
+* bugs
+- fix 5 card hand comparison
 
-personal/git
-* TODO learn to use magit
+* polish (there should be a lot here, but i'm lazy.
+- remove pass other button
 
-inprogress
-* TODO refactor apps into client, server, and util (shared)
-** client
-*** actions
-joinGame/add player
-play cards
-pass turn
 
-*** events
-players
-game begin (init log, init stack, deal cards to player)
-cards played
-passed turn
-active player changed
+* infrastructure/test
+- template.js should auto-convert models to hashes
+- write tests that extend game model (e.g. deal out straight flushes and stuff), pass in args through start-up (e.g. node server.js --test myTestCase)
+- convert site/js/lib to npm modules, use browserfy to create a single bundle of lib js, remove those lib things from the require statements ( they should be available globally? )
+- configure node require to include site/js
+- create a template for game log view
+- Add server side validation for playing cards
+- don't re-render entire game log every time someone makes a play
+- 5 card hand display should look better
 
-*** client only
-selected cards
