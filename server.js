@@ -88,22 +88,22 @@ function joinGameHandler(socket, args) {
 		return gameSocket.name === args.name;
 	});
 
+	var playerNames = [];
+	// Change to 1 for basic testing
+	if (0) {
+		playerNames = _.map(['',' 2',' 3',' 4'], function(i) { return args.name + i; });
+	}
+	else {
+		playerNames = _.map(gameSockets, function(gameSocket) {
+			return gameSocket['name'];
+		});
+	}
+
 	if (!exists) {
 		gameSockets.push({
 			socket: socket,
 			name: args.name
 		});
-
-		var playerNames = [];
-		// Change to 1 for basic testing
-		if (0) {
-			playerNames = _.map(['',' 2',' 3',' 4'], function(i) { return args.name + i; });
-		}
-		else {
-			playerNames = _.map(gameSockets, function(gameSocket) {
-				return gameSocket['name'];
-			});
-		}
 
 		_.map(gameSockets, function(gameSocket) {
 			return gameSocket.socket.emit('players', playerNames);
@@ -119,6 +119,22 @@ function joinGameHandler(socket, args) {
 				playerNames: playerNames
 			});
 		}
+	}
+	else if (game.gameIsStarted()) {
+		var player = game.getPlayer({
+			name: args.name
+		});
+
+		var activePlayerName = game.activePlayer().get('name');
+		console.log(args.name + ' is rejoining.');
+
+		socket.emit('players', playerNames);
+		socket.emit('begin', {
+			player: player,
+			gameCode: args.gameCode,
+			activePlayer: activePlayerName
+		});
+		socket.emit('active player', activePlayerName);
 	}
 }
 

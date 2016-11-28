@@ -13,6 +13,7 @@ return Backbone.Model.extend({
 	newGame: function(args) {
 		var app = this;
 		app.game = Game;
+		Game.set('started', true);
 		Game.set('playerNames', args.playerNames);
 		Game.deal();
 	},
@@ -52,6 +53,10 @@ return Backbone.Model.extend({
 		}
 
 		return Game.get('activePlayer');
+	},
+
+	gameIsStarted: function() {
+		return Game.get('started');
 	}
 
 });
