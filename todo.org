@@ -1,15 +1,10 @@
 * new features
 - drag/drop hand order (e.g. modify order of player.get('hand')
-- re-join game
-- pass disabled for freebie
 - validation on join button in registration view
   - should require game code and user name to look enabled
 - add create game button that generates game code
 - add win condition (e.g. you win when you run out of cards)
-- add 3 of diamonds validation (must play 3 of diamonds on first turn)
 - add a start game button to support 3 player chinese poker (add the last card to the game log, e.g. Jim gets the Jack of Hearts)
-- J-2 and 10-A straights
-- make ace/2 high cards
 
 * polish (there should be a lot here, but i'm lazy with todos)
 - remove pass other button
