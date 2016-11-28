@@ -15,7 +15,7 @@ define("js/app/client", [
 // This is a singleton that handles all of the incoming socket messages from the server
 // Goal is to consolidate the shared data between the views, and have a single server/client relationship for messages.
 var clientApp = Backbone.Model.extend({
-	socket: io.connect('http://localhost:8080'),
+	socket: io.connect(),
 
 	// This probably shouldn't be in the socket app, and instead in the game or utils app?
 	selectedCards: function() {
