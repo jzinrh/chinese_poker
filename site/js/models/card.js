@@ -20,6 +20,24 @@ return Backbone.Model.extend({
 		'Spades': 4
 	},
 
+	compareValue: function() {
+		var card = this;
+
+		var value = card.get('value');
+
+		// TODO fix this hack
+		var lookup = {
+			1: 14,
+			2: 15
+		};
+
+		if (lookup[ value ]) {
+			value = lookup[value];
+		}
+
+		return value;
+	},
+
 	suitValue: function() {
 		var card = this;
 
@@ -50,7 +68,6 @@ return Backbone.Model.extend({
 		var suit = card.get('suit');
 		return String(displayValue)[0] + suit[0];
 	}
-
 });
 
 

@@ -62,60 +62,27 @@ var cardApp = Backbone.Model.extend({
 			isValidNextPlay = false;
 		}
 		else if (_.contains([1,2,3], lastPlayCards.length)) {
-			var lastPlayCompareCard = _.max(lastPlayCards, app.maxCardValue);
-			var compareCard = _.max(cards, app.maxCardValue);
+			var lastPlayCompareCard = _.max(lastPlayCards, app.compareCardValue);
+			var compareCard = _.max(cards, app.compareCardValue);
 
-			if (lastPlayCompareCard.get('value') > compareCard.get('value')) {
-				isValidNextPlay = false;
-			}
-			else if (lastPlayCompareCard.get('value') == compareCard.get('value')) {
-				isValidNextPlay = (
-					lastPlayCompareCard.suitValue() < compareCard.suitValue()
-				);
-			}
+			isValidNextPlay = app.firstCardIsGreaterThanSecond(compareCard, lastPlayCompareCard);
 		}
 		else if (lastPlayCards.length == 5) {
-			var handRank = app.fiveCardHandRank();
-			var lastHandType = app.fiveCardHandType(lastPlayCards);
-			var lastPlayLastCard = lastPlayCards[4];
-			var handType = app.fiveCardHandType(cards);
-			var lastCard = cards[4];
-			var lastCardIsHigher = app.isFirstCardGreaterThanSecond(lastCard, lastPlayLastCard);
-			var mostProminentCard = app.mostProminentCard(cards);
-			var lastPlayMostProminentCard = app.mostProminentCard(lastPlayMostProminentCard);
-			var mostProminentCardIsHigher = app.isFirstCardGreaterThanSecond(
-				mostProminentCard,
-				lastPlayMostProminentCard
-			);
-
-			if (handRank[ lastHandType ] > handRank[ handType ]) {
-				isValidNextPlay = false;
-			}
-			else if (handRank[ lastHandType ] < handRank[ handType ]) {
-				isValidNextPlay = true;
-			}
-			else if (handType === 'Straight') {
-				isValidNextPlay = lastCardIsHigher;
-			}
-			else if (_.contains(['Flush', 'Straight Flush'], handType)) {
-				isValidNextPlay = (
-					lastPlayLastCard.suitValue() < lastCard.suitValue()
-					|| (
-						lastPlayLastCard.suitValue() == lastCard.suitValue()
-						&& lastCardIsHigher
-					)
-				);
-			}
-			else if (_.contains(['Full House', 'Bomb'], handType)) {
-				isValidNextPlay = mostProminentCardIsHigher;
-			}
+			isValidNextPlay = app.firstHandIsGreaterThanSecond(cards, lastPlayCards);
 		}
 
 		return isValidNextPlay;
 	},
 
-	maxCardValue: function(card) {
-		return card.get('value');
+	compareCardValue: function(card) {
+		// Cheap trick to order first by rank, then by suit.
+		var value = card.compareValue();
+		var compareValue = value * 10;
+
+		compareValue += card.suitValue();
+
+		return compareValue;
+
 	},
 
 	handDisplayString: function(cards) {
@@ -163,7 +130,7 @@ var cardApp = Backbone.Model.extend({
 		var app = this;
 
 		var groupedCards = _.groupBy(cards, function(card) {
-			return card.get('value');
+			return card.compareValue();
 		});
 
 		var mostProminentCard = _.chain(groupedCards)
@@ -197,11 +164,23 @@ var cardApp = Backbone.Model.extend({
 			}
 		}
 
+		// I have not enjoyed writing 5 card hand validation because I am very lazy.
+		var validWrappedStraights = {
+			'3451415' : true,
+			'345614': true
+		};
+
+		var joinedCardString = _.reduce(uniqueCards, function(a, b) {
+			return a + '' + b;
+		});
+
 		var isFlush = ( uniqueSuits.length == 1 );
 		var isStraight = (
 			( uniqueCards.length == 5 )
 			&& (
 				( Number(uniqueCards[0]) + 4 ) == Number(uniqueCards[4])
+				||
+				validWrappedStraights[ joinedCardString ]
 			)
 		);
 
@@ -216,6 +195,70 @@ var cardApp = Backbone.Model.extend({
 		}
 
 		return handType;
+	},
+
+	firstCardIsGreaterThanSecond: function(first, second) {
+		var app = this;
+
+		var firstCompareValue = app.compareCardValue(first);
+		var secondCompareValue = app.compareCardValue(second);
+
+		return ( firstCompareValue > secondCompareValue );
+	},
+
+	mostProminentCard: function(cards) {
+		var app = this;
+
+		var groupedCards = _.groupBy(cards, function(card) {
+			return card.get('value');
+		});
+
+		var mostProminentCard = _.chain(groupedCards)
+			.max(function(sameCards, rank) {
+				return sameCards.length;
+			})
+			.first()
+			.value();
+
+		return mostProminentCard;
+	},
+
+	firstHandIsGreaterThanSecond: function(first, second) {
+		var app = this;
+
+		var handRank = app.fiveCardHandRank();
+		var firstHandType = app.fiveCardHandType(first);
+		var secondHandType = app.fiveCardHandType(second);
+		var firstHandRank = handRank[ firstHandType ]
+		var secondHandRank = handRank[ secondHandType ]
+
+		var firstHandIsGreater = ( firstHandRank > secondHandRank );
+		if (firstHandRank === secondHandRank) {
+			var firstCompareCard = _.max(first, app.compareCardValue);
+			var secondCompareCard = _.max(second, app.compareCardValue);
+			var firstCardIsGreater = app.firstCardIsGreaterThanSecond(firstCompareCard, secondCompareCard);
+
+			if (_.contains(['Flush', 'Straight Flush'], firstHandType)) {
+				firstHandIsGreater = (
+					firstCompareCard.suitValue() > secondCompareCard.suitValue()
+					|| (
+						firstCompareCard.suitValue() === secondCompareCard.suitValue()
+						&& firstCardIsGreater
+					)
+				);
+			}
+			else if (firstHandType === 'Straight') {
+				firstHandIsGreater = firstCardIsGreater;
+			}
+			else if (_.contains(['Full House', 'Bomb'], firstHandType)) {
+				firstHandIsGreater = app.firstCardIsGreaterThanSecond(
+					app.mostProminentCard(first),
+					app.mostProminentCard(second)
+				);
+			}
+		}
+
+		return firstHandIsGreater;
 	}
 
 });
