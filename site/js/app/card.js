@@ -52,6 +52,18 @@ var cardApp = Backbone.Model.extend({
 
 		var lastPlay = _.last(stack);
 
+		var gameLog = ClientApp.get('log');
+
+		// Hack for 3 of Diamonds
+		if (isValidHand && gameLog.length === 0) {
+			isValidHand = _.any(cards, function(card) {
+				return (
+					Number(card.get('value')) === 3
+					&& card.get('suit') === 'Diamonds'
+				);
+			});
+		}
+
 		if (!lastPlay || !isValidHand || lastPlay.pass) {
 			return isValidHand;
 		}

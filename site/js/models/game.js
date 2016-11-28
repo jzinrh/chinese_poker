@@ -56,7 +56,7 @@ var game = Backbone.Model.extend({
 			var lowestCard = _.find(sortedHand, function(card) {
 				return (
 					Number(card.get('value')) === 3
-			&& card.get('suit') === 'Diamonds'
+					&& card.get('suit') === 'Diamonds'
 				);
 			});
 
