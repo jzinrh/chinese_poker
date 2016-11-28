@@ -50,7 +50,7 @@ var game = Backbone.Model.extend({
 
 		var players = _.map(game.get('playerNames'), function(playerName) {
 			var sortedHand = _.sortBy(handsByPlayer[ playerName ], function(card) {
-				return card.get('value');
+				return card.compareValue()
 			});
 
 			var lowestCard = _.find(sortedHand, function(card) {
