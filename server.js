@@ -89,6 +89,13 @@ function joinGameHandler(socket, args) {
 	});
 
 	var playerNames = [];
+	if (!exists) {
+		gameSockets.push({
+			socket: socket,
+			name: args.name
+		});
+	}
+
 	// Change to 1 for basic testing
 	if (0) {
 		playerNames = _.map(['',' 2',' 3',' 4'], function(i) { return args.name + i; });
@@ -99,26 +106,20 @@ function joinGameHandler(socket, args) {
 		});
 	}
 
-	if (!exists) {
-		gameSockets.push({
-			socket: socket,
-			name: args.name
+	_.map(gameSockets, function(gameSocket) {
+		return gameSocket.socket.emit('players', playerNames);
+	});
+
+
+	if (playerNames.length == 4 && !game.gameIsStarted()) {
+		console.log('player names: ' + playerNames);
+
+		_startGame({
+			game: game,
+			gameCode: args.game,
+			gameSockets: gameSockets,
+			playerNames: playerNames
 		});
-
-		_.map(gameSockets, function(gameSocket) {
-			return gameSocket.socket.emit('players', playerNames);
-		});
-
-		if (playerNames.length == 4) {
-			console.log('player names: ' + playerNames);
-
-			_startGame({
-				game: game,
-				gameCode: args.game,
-				gameSockets: gameSockets,
-				playerNames: playerNames
-			});
-		}
 	}
 	else if (game.gameIsStarted()) {
 		var player = game.getPlayer({
