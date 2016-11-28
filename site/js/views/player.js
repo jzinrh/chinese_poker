@@ -50,12 +50,15 @@ return Backbone.View.extend({
 		var view = this;
 
 		var isActivePlayer = ClientApp.get('isActivePlayer');
+		var stack = ClientApp.get('stack');
+		var isNewRound = ( stack.length === 0 );
+
 		var isValidPlay = CardApp.isValidNextPlay();
 
 		var playButtonEnabled = ( isValidPlay && isActivePlayer );
 		view.$el.find('.play-button').toggleClass('enabled', playButtonEnabled);
 		view.$el.find('.pass-other-button').toggleClass('enabled', !isActivePlayer);
-		view.$el.find('.pass-button').toggleClass('enabled', isActivePlayer);
+		view.$el.find('.pass-button').toggleClass('enabled', isActivePlayer && !isNewRound);
 	},
 
 	/********************************************************************************
