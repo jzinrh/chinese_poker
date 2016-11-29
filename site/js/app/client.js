@@ -30,6 +30,7 @@ var clientApp = Backbone.Model.extend({
 		return selectedCards;
 	},
 
+	// args are name and game code {'name': 'dave', 'gameCode': '135'}
 	joinGame: function(args) {
 		var app = this;
 
@@ -59,6 +60,7 @@ var clientApp = Backbone.Model.extend({
 		var gameCode = app.get('gameCode');
 		var player = app.get('player');
 
+		// app.socket.send_message_to_server
 		app.socket.emit('pass turn', {
 			game: gameCode,
 			name: player.get('name')
@@ -85,6 +87,7 @@ ClientApp.socket.on('players', function(playerNames) {
 	ClientApp.set('playerNames', playerNames);
 });
 
+//starting the game
 ClientApp.socket.on('begin', function(args) {
 	var player = args.player;
 

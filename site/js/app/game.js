@@ -18,6 +18,7 @@ return Backbone.Model.extend({
 		Game.deal();
 	},
 
+	//expects args as a hash with 'name' as the key
 	getPlayer: function(args) {
 		var app = this;
 
@@ -35,16 +36,17 @@ return Backbone.Model.extend({
 
 		var activePlayer = app.activePlayer();
 		var players = Game.get('players');
-		var playerIndex = _.findIndex(players, function(player) {
+		var activePlayerIndex = _.findIndex(players, function(player) {
 			return activePlayer.cid === player.cid;
 		});
 
-		var nextPlayerIndex = ( playerIndex + 1 ) % players.length;
+		var nextPlayerIndex = ( activePlayerIndex + 1 ) % players.length;
 		var nextPlayer = players[ nextPlayerIndex ];
 
 		return app.activePlayer({ activePlayer: nextPlayer });
 	},
 
+	// args is object with 'activePlayer' as the key
 	activePlayer: function(args) {
 		var app = this;
 
