@@ -11,7 +11,6 @@ define("js/views/game_log", [
 ) {
 
 return Backbone.View.extend({
-
 	render: function() {
 		var view = this;
 
@@ -50,6 +49,9 @@ return Backbone.View.extend({
 				}
 
 				view.$el.append(displayString);
+
+				var elDom = view.$el.get(0);
+				elDom.scrollTop = elDom.scrollHeight;
 			});
 		});
 
