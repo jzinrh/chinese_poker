@@ -121,6 +121,7 @@ function joinGameHandler(socket, args) {
 			playerNames: playerNames
 		});
 	}
+	// player is rejoining game
 	else if (game.gameIsStarted()) {
 		var player = game.getPlayer({
 			name: args.name
@@ -139,6 +140,7 @@ function joinGameHandler(socket, args) {
 	}
 }
 
+// _ signifies private function, not necessarily enforced
 function _startGame(args) {
 	var game = args.game;
 	var gameSockets = args.gameSockets;
