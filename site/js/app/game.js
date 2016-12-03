@@ -35,12 +35,20 @@ return Backbone.Model.extend({
 
 		var activePlayer = app.activePlayer();
 		var players = Game.get('players');
-		var playerIndex = _.findIndex(players, function(player) {
+
+		var activePlayers = _.filter(players, function(player) {
+			return (
+				player.get('hand').length > 0
+				|| player.cid === activePlayer.cid
+			);
+		});
+
+		var activePlayerIndex = _.findIndex(activePlayers, function(player) {
 			return activePlayer.cid === player.cid;
 		});
 
-		var nextPlayerIndex = ( playerIndex + 1 ) % players.length;
-		var nextPlayer = players[ nextPlayerIndex ];
+		var nextPlayerIndex = ( activePlayerIndex + 1 ) % activePlayers.length;
+		var nextPlayer = activePlayers[ nextPlayerIndex ];
 
 		return app.activePlayer({ activePlayer: nextPlayer });
 	},

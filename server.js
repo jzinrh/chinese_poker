@@ -61,11 +61,26 @@ io.on('connection', function(socket){
 });
 
 function playCardsHandler(socket, args) {
-	console.log(args.name + ' played');
 	var gameApp = games[ args.game ];
+
+	var activePlayer = gameApp.activePlayer();
+	var playedCards = args.cards;
+	var playedCardModels = activePlayer.get('hand').filter(function(card) {
+		return _.any(playedCards, function(playedCard) {
+			return (
+				playedCard.suit === card.get('suit')
+				&& playedCard.value === card.get('value')
+			);
+		});
+	});
+
+	activePlayer.get('hand').remove(playedCardModels);
 
 	var gameSockets = allGameSockets[ args.game ];
 	var nextPlayer = gameApp.nextActivePlayer();
+
+	console.log(args.name + ' played and has ' + activePlayer.get('hand').length + ' cards left');
+	console.log(nextPlayer.get('name') + ' is the active player');
 
 	_.each(gameSockets, function(gameSocket) {
 		gameSocket.socket.emit('cards played', args);
