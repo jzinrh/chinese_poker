@@ -26,13 +26,29 @@ app.use(
 );
 
 // Landing page
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
 	res.sendfile('index.html');
 });
 
 
-io.on('connection', function(socket){
+io.on('connection', function(socket) {
 	console.log('a user connected ' + socket.id);
+
+	socket.on('disconnect', function() {
+		_.each(allGameSockets, function(gameSockets, gameCode) {
+
+			// definitely a cleaner way to do this
+			var socketInfo = _.find(gameSockets, function(socketInfo) {
+				return ( socketInfo.socket.id == socket.id );
+			});
+
+			if (socketInfo) {
+				allGameSockets[ gameCode ] = _.filter(gameSockets, function(socketInfo) {
+					return ( socketInfo.socket.id != socket.id );
+				});
+			}
+		});
+	});
 
 	socket.on('play cards', function(args) {
 		// TODO add same validation
@@ -136,7 +152,7 @@ function joinGameHandler(socket, args) {
 			playerNames: playerNames
 		});
 	}
-	else if (game.gameIsStarted()) {
+	else if (game.gameIsStarted() && !exists) {
 		var player = game.getPlayer({
 			name: args.name
 		});
