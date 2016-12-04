@@ -32,6 +32,42 @@ app.get('/', function(req, res) {
 
 
 io.on('connection', function(socket) {
+
+	socket.on('create', function(args) {
+		var newGameCode = _generateGameCode();
+
+		while (allGameSockets[ newGameCode ]) {
+			newGameCode = _generateGameCode();
+		}
+
+		allGameSockets[ newGameCode ] = [];
+		games[ newGameCode ] = new gameApp();
+
+		_joinGame(socket, {
+			game: newGameCode,
+			name: args.name
+		});
+
+		socket.emit('created game', newGameCode);
+	});
+
+	socket.on('start', function(args) {
+		var gameSockets = allGameSockets[ args.game ];
+		var game = games[ args.game ];
+		var playerNames = _playerNames(args.game);
+
+		if (_.contains([3,4], playerNames.length) && !game.gameIsStarted()) {
+			console.log('player names: ' + playerNames);
+
+			_startGame({
+				game: game,
+				gameCode: args.game,
+				gameSockets: gameSockets,
+				playerNames: playerNames
+			});
+		}
+	});
+
 	console.log('a user connected ' + socket.id);
 
 	socket.on('disconnect', function() {
@@ -43,9 +79,16 @@ io.on('connection', function(socket) {
 			});
 
 			if (socketInfo) {
+				console.log(socketInfo.name + ' has disconnected.');
 				allGameSockets[ gameCode ] = _.filter(gameSockets, function(socketInfo) {
 					return ( socketInfo.socket.id != socket.id );
 				});
+			}
+
+			if (!allGameSockets[ gameCode ].length) {
+				console.log('Last user for ' + gameCode + ' disconnected, killing the game');
+				delete allGameSockets[ gameCode ];
+				delete games[ gameCode ];
 			}
 		});
 	});
@@ -105,21 +148,26 @@ function playCardsHandler(socket, args) {
 }
 
 function joinGameHandler(socket, args) {
-	console.log(args.name + ' ' + 'joined game ' + args.game);
-
-	if (!allGameSockets[ args.game ]) {
-		allGameSockets[ args.game ] = [];
-		games[ args.game ] = new gameApp();
-	}
-
-	var gameSockets = allGameSockets[ args.game ];
 	var game = games[ args.game ];
 
+	if (!game) {
+		socket.emit('join error', args.game);
+		return;
+	}
+
+	console.log(args.name + ' ' + 'joined game ' + args.game);
+
+	_joinGame(socket, args);
+}
+
+function _joinGame(socket, args) {
+	var game = games[ args.game ];
+
+	var gameSockets = allGameSockets[ args.game ];
 	var exists = _.find(gameSockets, function(gameSocket) {
 		return gameSocket.name === args.name;
 	});
 
-	var playerNames = [];
 	if (!exists) {
 		gameSockets.push({
 			socket: socket,
@@ -127,32 +175,13 @@ function joinGameHandler(socket, args) {
 		});
 	}
 
-	// Change to 1 for basic testing
-	if (0) {
-		playerNames = _.map(['',' 2',' 3',' 4'], function(i) { return args.name + i; });
-	}
-	else {
-		playerNames = _.map(gameSockets, function(gameSocket) {
-			return gameSocket['name'];
-		});
-	}
+	var playerNames = _playerNames(args.game);
 
-	_.map(gameSockets, function(gameSocket) {
-		return gameSocket.socket.emit('players', playerNames);
+	_.each(gameSockets, function(gameSocket) {
+		gameSocket.socket.emit('players', playerNames);
 	});
 
-
-	if (playerNames.length == 4 && !game.gameIsStarted()) {
-		console.log('player names: ' + playerNames);
-
-		_startGame({
-			game: game,
-			gameCode: args.game,
-			gameSockets: gameSockets,
-			playerNames: playerNames
-		});
-	}
-	else if (game.gameIsStarted() && !exists) {
+	if (game.gameIsStarted() && !exists) {
 		var player = game.getPlayer({
 			name: args.name
 		});
@@ -161,9 +190,8 @@ function joinGameHandler(socket, args) {
 		console.log(args.name + ' is rejoining.');
 
 		socket.emit('players', playerNames);
-		socket.emit('begin', {
+		socket.emit('started', {
 			player: player,
-			gameCode: args.gameCode,
 			activePlayer: activePlayerName
 		});
 		socket.emit('active player', activePlayerName);
@@ -195,7 +223,7 @@ function _startGame(args) {
 			name: gameSocket.name
 		});
 
-		gameSocket.socket.emit('begin', {
+		gameSocket.socket.emit('started', {
 			player: player,
 			gameCode: gameCode,
 			activePlayer: activePlayer.get('name')
@@ -203,4 +231,26 @@ function _startGame(args) {
 	});
 	console.log('********************************************************************************');
 
+}
+
+function _generateGameCode() {
+	return Math.random().toString(36).substr(2, 5);
+}
+
+function _playerNames(gameCode) {
+	var gameSockets = allGameSockets[ gameCode ];
+
+	var playerNames = playerNames = _.map(gameSockets, function(gameSocket) {
+		return gameSocket['name'];
+	});
+
+	// Change to 1 for basic testing
+	if (0) {
+		var numberOfBotsToAdd = 4 - playerNames.length;
+		_.each(_.range(0, numberOfBotsToAdd), function(i) {
+			playerNames.push('bot ' + i);
+		});
+	}
+
+	return playerNames;
 }

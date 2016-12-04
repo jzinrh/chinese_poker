@@ -2,9 +2,8 @@
 - drag/drop hand order (e.g. modify order of player.get('hand')
 - validation on join button in registration view
   - should require game code and user name to look enabled
-- add create game button that generates game code
-- add a start game button to support 3 player chinese poker (add the last card to the game log, e.g. Jim gets the Jack of Hearts)
 - make user accounts to prevent (really easy) cheating
+- button styling on registration, should probably just... completely redo player_status/registration
 
 * polish (there should be a lot here, but i'm lazy with todos)
 - remove pass other button

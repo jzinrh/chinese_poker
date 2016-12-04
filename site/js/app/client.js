@@ -30,10 +30,22 @@ var clientApp = Backbone.Model.extend({
 		return selectedCards;
 	},
 
+	createGame: function(args) {
+		var app = this;
+
+		app.socket.emit('create', args);
+	},
+
 	joinGame: function(args) {
 		var app = this;
 
 		app.socket.emit('join', args);
+	},
+
+	startGame: function(args) {
+		var app = this;
+
+		app.socket.emit('start', args);
 	},
 
 	playCards: function() {
@@ -85,7 +97,7 @@ ClientApp.socket.on('players', function(playerNames) {
 	ClientApp.set('playerNames', playerNames);
 });
 
-ClientApp.socket.on('begin', function(args) {
+ClientApp.socket.on('started', function(args) {
 	var player = args.player;
 
 	ClientApp.set('log', []);
@@ -158,6 +170,10 @@ ClientApp.socket.on('active player', function(activePlayer) {
 		activePlayer: activePlayer,
 		isActivePlayer: ( activePlayer === player.get('name') )
 	});
+});
+
+ClientApp.socket.on('created game', function(newGameCode) {
+	ClientApp.set('gameCode', newGameCode);
 });
 
 return ClientApp;

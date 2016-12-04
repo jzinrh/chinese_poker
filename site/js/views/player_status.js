@@ -11,6 +11,22 @@ return Backbone.View.extend({
 	render: function() {
 		var view = this;
 
+		var playerNames = ClientApp.get('playerNames');
+		var gameCode = ClientApp.get('gameCode');
+		var activePlayer = ClientApp.get('activePlayer');
+		view.$el.html('');
+
+		if (gameCode) {
+			view.$el.append('Game Code: ' + gameCode);
+		}
+		_.each(playerNames, function(playerName) {
+			var isActivePlayer = ( playerName === activePlayer );
+			view.$el.append(PlayerTemplate({
+				name: playerName,
+				activePlayer: isActivePlayer
+			}));
+		});
+
 		view.attachListeners();
 	},
 
@@ -23,18 +39,12 @@ return Backbone.View.extend({
 
 		view.attachedListeners = true;
 
-		ClientApp.on('change:playerNames', function() {
-			var playerNames = ClientApp.get('playerNames');
-			var activePlayer = ClientApp.get('activePlayer');
-			view.$el.html('');
-			_.each(playerNames, function(playerName) {
-				var isActivePlayer = ( playerName === activePlayer );
-				view.$el.append(PlayerTemplate({
-					name: playerName,
-					activePlayer: isActivePlayer
-				}));
-			});
+		ClientApp.on('change:gameCode', function() {
+			view.render();
+		});
 
+		ClientApp.on('change:playerNames', function() {
+			view.render();
 		});
 
 		ClientApp.on('change:activePlayer', function() {
