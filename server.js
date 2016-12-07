@@ -209,6 +209,9 @@ function _startGame(args) {
 	});
 
 	var activePlayer = game.activePlayer();
+	var lastCard = game.lastCard();
+	console.log(activePlayer.get('name') + ' got the last card ' + lastCard.toString());
+
 	console.log('********************************************************************************');
 	console.log('Game started');
 
@@ -226,7 +229,8 @@ function _startGame(args) {
 		gameSocket.socket.emit('started', {
 			player: player,
 			gameCode: gameCode,
-			activePlayer: activePlayer.get('name')
+			activePlayer: activePlayer.get('name'),
+			lastCard: lastCard
 		});
 	});
 	console.log('********************************************************************************');

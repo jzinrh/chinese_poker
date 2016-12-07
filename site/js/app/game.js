@@ -65,6 +65,10 @@ return Backbone.Model.extend({
 
 	gameIsStarted: function() {
 		return Game.get('started');
+	},
+
+	lastCard: function() {
+		return Game.get('lastCard');
 	}
 
 });

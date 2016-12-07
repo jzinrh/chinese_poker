@@ -35,6 +35,12 @@ var game = Backbone.Model.extend({
 		var card = deck.pop();
 		var playerNames = game.get('playerNames');
 
+		var lastCard;
+		if (playerNames.length === 3) {
+			lastCard = card;
+			card = deck.pop();
+		}
+
 		while (card && playerNames && playerNames.length) {
 			_.each(playerNames, function(playerName) {
 				if (!handsByPlayer[ playerName ]) {
@@ -49,15 +55,22 @@ var game = Backbone.Model.extend({
 		}
 
 		var players = _.map(game.get('playerNames'), function(playerName) {
-			var sortedHand = _.sortBy(handsByPlayer[ playerName ], function(card) {
-				return card.compareValue()
-			});
-
-			var lowestCard = _.find(sortedHand, function(card) {
+			var playerHand = handsByPlayer[ playerName ];
+			var lowestCard = _.find(playerHand, function(card) {
 				return (
 					Number(card.get('value')) === 3
 					&& card.get('suit') === 'Diamonds'
 				);
+			});
+
+			// Give the last card to the player with the 3 of diamonds
+			if (lastCard && lowestCard) {
+				game.set('lastCard', lastCard);
+				playerHand.push(lastCard);
+			}
+
+			var sortedHand = _.sortBy(playerHand, function(card) {
+				return card.compareValue()
 			});
 
 			var playerHand = new CardCollection(sortedHand);

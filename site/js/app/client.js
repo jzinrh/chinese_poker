@@ -100,7 +100,15 @@ ClientApp.socket.on('players', function(playerNames) {
 ClientApp.socket.on('started', function(args) {
 	var player = args.player;
 
-	ClientApp.set('log', []);
+	var log = [];
+	if (args.lastCard) {
+		// TODO: fix this to actually have the right player
+		log.push({
+			playerName: args.activePlayer,
+			lastCard: new Card(args.lastCard)
+		});
+	}
+	ClientApp.set('log', log);
 	ClientApp.set('stack', []);
 
 	var cards = _.map(player.hand, function(card) {
@@ -121,6 +129,8 @@ ClientApp.socket.on('started', function(args) {
 		gameCode: args.gameCode,
 		cards: playerModel.get('hand')
 	});
+
+	ClientApp.trigger('logChange');
 });
 
 ClientApp.socket.on('cards played', function(args) {
@@ -157,11 +167,27 @@ ClientApp.socket.on('passed turn', function(playerName) {
 
 ClientApp.socket.on('active player', function(activePlayer) {
 	var player = ClientApp.get('player');
-	var stack = ClientApp.get('stack');
-	var lastPlay = _.last(stack);
+	var log = ClientApp.get('log');
+	var lastPlayIndex = _.findLastIndex(log, function(logItem) {
+		return !log.pass;
+	});
+	var lastPlay = log[ lastPlayIndex ];
+
+	var freebie = false;
+	if (lastPlay) {
+		var numberOfPasses = log.length - ( lastPlayIndex + 1 );
+		var activePlayerPass = _.find(_.last(log, numberOfPasses), function(pass) {
+			return pass.playerName === activePlayer;
+		});
+
+		freebie = (
+			( lastPlay.playerName === activePlayer )
+			|| ( activePlayerPass )
+		);
+	}
 
 	// Wipe out the stack if the active player made the last play.
-	if (lastPlay && lastPlay.playerName === activePlayer) {
+	if (freebie) {
 		ClientApp.set('stack', []);
 		ClientApp.trigger('stackChange');
 	}

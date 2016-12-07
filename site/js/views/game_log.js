@@ -41,6 +41,9 @@ return Backbone.View.extend({
 				if (passed) {
 					displayString = '<div>' + playerName + ' passed their turn.</div>';
 				}
+				else if (turn.lastCard) {
+					displayString = '<div>' + playerName + ' got the ' + turn.lastCard.toString() + '.</div>';
+				}
 				else {
 					displayString = PlayedCardTemplate({
 						player: playerName,
