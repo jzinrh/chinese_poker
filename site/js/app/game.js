@@ -12,10 +12,12 @@ return Backbone.Model.extend({
 
 	newGame: function(args) {
 		var app = this;
-		app.game = Game;
-		Game.set('started', true);
-		Game.set('playerNames', args.playerNames);
-		Game.deal();
+
+		app.game = new Game();
+
+		app.game.set('started', true);
+		app.game.set('playerNames', args.playerNames);
+		app.game.deal();
 	},
 
 	getPlayer: function(args) {
@@ -23,7 +25,7 @@ return Backbone.Model.extend({
 
 		var playerName = args.name;
 
-		var player = _.find(Game.get('players'), function(player) {
+		var player = _.find(app.game.get('players'), function(player) {
 			return playerName === player.get('name');
 		});
 
@@ -34,7 +36,7 @@ return Backbone.Model.extend({
 		var app = this;
 
 		var activePlayer = app.activePlayer();
-		var players = Game.get('players');
+		var players = app.game.get('players');
 
 		var activePlayers = _.filter(players, function(player) {
 			return (
@@ -57,18 +59,22 @@ return Backbone.Model.extend({
 		var app = this;
 
 		if (args && args.activePlayer) {
-			Game.set('activePlayer', args.activePlayer);
+			app.game.set('activePlayer', args.activePlayer);
 		}
 
-		return Game.get('activePlayer');
+		return app.game.get('activePlayer');
 	},
 
 	gameIsStarted: function() {
-		return Game.get('started');
+		var app = this;
+
+		return (app.game && app.game.get('started'));
 	},
 
 	lastCard: function() {
-		return Game.get('lastCard');
+		var app = this;
+
+		return app.game.get('lastCard');
 	}
 
 });

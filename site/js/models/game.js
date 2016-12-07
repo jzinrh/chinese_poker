@@ -91,6 +91,6 @@ var game = Backbone.Model.extend({
 	}
 });
 
-return new game;
+return game;
 
 });
