@@ -102,7 +102,7 @@ ClientApp.socket.on('started', function(args) {
 
 	var log = [];
 	if (args.lastCard) {
-		// TODO: fix this to actually have the right player
+		// TODO: fix this to actually have the right player instead of just the active one
 		log.push({
 			playerName: args.activePlayer,
 			lastCard: new Card(args.lastCard)
@@ -169,7 +169,7 @@ ClientApp.socket.on('active player', function(activePlayer) {
 	var player = ClientApp.get('player');
 	var log = ClientApp.get('log');
 	var lastPlayIndex = _.findLastIndex(log, function(logItem) {
-		return !log.pass;
+		return !logItem.pass;
 	});
 	var lastPlay = log[ lastPlayIndex ];
 

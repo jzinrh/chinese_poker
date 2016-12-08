@@ -46,16 +46,15 @@ var cardApp = Backbone.Model.extend({
 
 		var isValidNextPlay = isValidHand;
 
-		var stack = _.filter(ClientApp.get('stack'), function(play) {
-			return !play.pass;
+		var plays = _.filter(ClientApp.get('log'), function(logItem) {
+			return !!logItem.cards;
 		});
-
-		var lastPlay = _.last(stack);
+		var lastPlay = _.last(plays);
 
 		var gameLog = ClientApp.get('log');
 
 		// Hack for 3 of Diamonds
-		if (isValidHand && gameLog.length === 0) {
+		if (isValidHand && !plays.length) {
 			isValidHand = _.any(cards, function(card) {
 				return (
 					Number(card.get('value')) === 3
