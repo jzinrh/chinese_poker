@@ -192,7 +192,9 @@ function _joinGame(socket, args) {
 		socket.emit('players', playerNames);
 		socket.emit('started', {
 			player: player,
-			activePlayer: activePlayerName
+			activePlayer: activePlayerName,
+			gameCode: args.game,
+			lastCard: game.lastCard()
 		});
 		socket.emit('active player', activePlayerName);
 	}
